@@ -35,7 +35,7 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
     };
 
     const handleSubmit = () => {
-        const updatedResults = quizResults.map((item, index) => {
+        const updatedResults = quizResults.map((item) => {
             const userAnswer = answers[item.correctAnswer] || '';
             const isCorrect = normalizeAnswer(userAnswer) === normalizeAnswer(item.correctAnswer);
             return {
