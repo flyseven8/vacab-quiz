@@ -2,6 +2,7 @@ import { useState } from "react";
 import './index.css'
 import QuizResult from "./components/QuizResult";
 import { quizResults23, quizResults24 } from "./data/quizData";
+import selectGif from './assets/cat.gif';
 
 export default function App() {
     const [selected, setSelected] = useState<23 | 24 | null>(null);
@@ -10,6 +11,7 @@ export default function App() {
         // 선택 화면
         return (
             <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+                <img src={selectGif} alt="과 선택" className="w-64 h-64 mb-8" />
                 <div className="text-2xl font-bold mb-8">과를 선택하세요</div>
                 <div className="flex gap-8">
                     <button

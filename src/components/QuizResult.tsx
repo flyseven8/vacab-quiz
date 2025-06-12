@@ -93,7 +93,18 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
                 </>
             )}
             <div className="w-full flex flex-col items-center mb-6">
-                <div className="text-lg font-semibold mb-2">{lessonNumber}과 (총 {items.length}문제)</div>
+                <div className="w-4/5 min-w-[20rem] flex items-center mb-2">
+                    <button
+                        onClick={onGoMain}
+                        className="p-2 rounded-full text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors mr-4"
+                        aria-label="뒤로 가기"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                    </button>
+                    <div className="text-lg font-semibold">{lessonNumber}과 (총 {items.length}문제)</div>
+                </div>
                 {submitted && (
                     <div className="text-lg">
                         <p className={`mt-3 font-bold ${passOrFail === "탈락" ? "text-red-600" : "text-blue-600"} text-3xl text-center`}>
@@ -120,14 +131,6 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
                         </div>
                     </div>
                 )}
-                <div className="flex justify-center mt-4">
-                    <button
-                        onClick={onGoMain}
-                        className="px-6 py-2 rounded-md text-white bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-                    >
-                        뒤로
-                    </button>
-                </div>
             </div>
             {(submitted
                 ? quizResults.filter(item => !item.isCorrect)
