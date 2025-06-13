@@ -76,16 +76,16 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
     const allCorrect = submitted && wrongCount === 0;
 
     return (
-        <div className="p-4 w-full flex flex-col items-center">
+        <div className="p-4 w-full flex flex-col items-center dark:bg-gray-900 dark:text-white">
             {allCorrect && (
                 <>
                     <Confetti width={windowSize.width} height={windowSize.height} />
                     <div className="fixed inset-0 flex flex-col items-center justify-center z-50">
-                        <h1 className="text-5xl font-bold text-blue-600 mb-8">100점! 축하합니다!</h1>
+                        <h1 className="text-5xl font-bold text-blue-600 dark:text-blue-400 mb-8">100점! 축하합니다!</h1>
                         <a
                             href="#"
                             onClick={e => { e.preventDefault(); onGoMain(); }}
-                            className="text-blue-500 underline text-2xl cursor-pointer"
+                            className="text-blue-500 dark:text-blue-400 underline text-2xl cursor-pointer"
                         >
                             처음으로
                         </a>
@@ -96,7 +96,7 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
                 <div className="w-4/5 min-w-[20rem] flex items-center mb-2">
                     <button
                         onClick={onGoMain}
-                        className="p-2 rounded-full text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors mr-4"
+                        className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors mr-4"
                         aria-label="뒤로 가기"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -107,23 +107,23 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
                 </div>
                 {submitted && (
                     <div className="text-lg">
-                        <p className={`mt-3 font-bold ${passOrFail === "탈락" ? "text-red-600" : "text-blue-600"} text-3xl text-center`}>
+                        <p className={`mt-3 font-bold ${passOrFail === "탈락" ? "text-red-600 dark:text-red-400" : "text-blue-600 dark:text-blue-400"} text-3xl text-center`}>
                             {passOrFail}
                         </p>
-                        <p className="mt-2 text-blue-600 text-lg font-semibold text-center">
+                        <p className="mt-2 text-blue-600 dark:text-blue-400 text-lg font-semibold text-center">
                             총 {quizResults.length}문제 중 {wrongCount}문제 틀림
                         </p>
                         <div className="flex justify-center mt-4 gap-4">
                             <button
                                 onClick={handleReset}
-                                className="px-6 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                                className="px-6 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
                             >
                                 초기화
                             </button>
                             {wrongCount > 0 && (
                                 <button
                                     onClick={handleRetryWrong}
-                                    className="px-6 py-2 rounded-md text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors"
+                                    className="px-6 py-2 rounded-md text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
                                 >
                                     틀린 문제 다시 풀기
                                 </button>
@@ -139,14 +139,18 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
                 <div
                     key={index}
                     className={`p-4 rounded-lg shadow mb-4 w-4/5 min-w-[20rem] ${
-                        submitted && item.isCorrect ? "bg-green-100" : submitted ? "bg-red-100" : "bg-white"
+                        submitted && item.isCorrect 
+                            ? "bg-green-100 dark:bg-green-900" 
+                            : submitted 
+                                ? "bg-red-100 dark:bg-red-900" 
+                                : "bg-white dark:bg-gray-800"
                     }`}
                 >
                     <div className="text-lg font-semibold">
-                        <span className="mr-2 text-gray-500">{index + 1}.</span>
+                        <span className="mr-2 text-gray-500 dark:text-gray-400">{index + 1}.</span>
                         {submitted && (item.isCorrect ? "✔️" : "❌")} {item.korean}
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-gray-600 dark:text-gray-300">
                         {item.partOfSpeech} {item.meaning}
                     </div>
                     <div className="mt-2">
@@ -156,7 +160,7 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
                                 type="text"
                                 value={answers[item.correctAnswer] || ''}
                                 onChange={(e) => handleAnswerChange(item.correctAnswer, e.target.value)}
-                                className="mt-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="mt-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                                 placeholder="답을 입력하세요"
                                 disabled={submitted}
                             />
@@ -176,8 +180,8 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
                     disabled={submitted}
                     className={`px-6 py-2 rounded-md text-white transition-colors ${
                         submitted 
-                            ? 'bg-gray-400 cursor-not-allowed' 
-                            : 'bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
+                            ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed' 
+                            : 'bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900'
                     }`}
                 >
                     {submitted ? '제출 완료' : '제출하기'}
