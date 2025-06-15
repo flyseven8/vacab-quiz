@@ -22,7 +22,7 @@ export default function App() {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors relative">
-            <div className="fixed top-32 left-1/2 -translate-x-1/2 z-50 text-5xl font-extrabold text-gray-800 dark:text-white">
+            <div className="fixed top-32 left-1/2 -translate-x-1/2 z-50 text-4xl font-extrabold text-gray-800 dark:text-white">
                 단원 급수제
             </div>
             <button
