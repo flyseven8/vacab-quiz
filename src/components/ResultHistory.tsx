@@ -6,6 +6,7 @@ type QuizResultHistory = {
     correctCount: number;
     total: number;
     wrongList: { korean: string; correct: string; user: string }[];
+    retry: boolean;
 };
 
 const ResultHistory: React.FC<{ onGoMain: () => void }> = ({ onGoMain }) => {
@@ -32,6 +33,9 @@ const ResultHistory: React.FC<{ onGoMain: () => void }> = ({ onGoMain }) => {
                     {history.map((item, idx) => (
                         <div key={idx} className="p-4 rounded-lg shadow bg-white dark:bg-gray-800">
                             <div className="font-semibold mb-1">{item.date}</div>
+                            {item.retry && (
+                                <div className="text-xs text-red-500 mb-1">틀린 문제 다시 풀기</div>
+                            )}
                             <div className="mb-1">범위: {item.range}</div>
                             <div className="mb-1">정답: {item.correctCount} / {item.total}</div>
                             {item.wrongList.length > 0 && (

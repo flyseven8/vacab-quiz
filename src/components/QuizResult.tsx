@@ -6,6 +6,7 @@ import Confetti from "react-confetti";
 const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ items, onGoMain }) => {
     const [answers, setAnswers] = useState<{ [key: string]: string }>({});
     const [submitted, setSubmitted] = useState(false);
+    const [submittedRetry, setSubmittedRetry] = useState(false);
     const [quizResults, setQuizResults] = useState<QuizItem[]>(items);
     const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
@@ -13,6 +14,7 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
         setQuizResults(items);
         setAnswers({});
         setSubmitted(false);
+        setSubmittedRetry(false);
     }, [items]);
 
     useEffect(() => {
@@ -57,7 +59,8 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
             range,
             correctCount,
             total: updatedResults.length,
-            wrongList: wrongItems.map(item => ({ korean: item.korean, correct: item.correctAnswer, user: item.userAnswer }))
+            wrongList: wrongItems.map(item => ({ korean: item.korean, correct: item.correctAnswer, user: item.userAnswer })),
+            retry: submittedRetry
         };
         const prev = JSON.parse(localStorage.getItem('quizResultsHistory') || '[]');
         localStorage.setItem('quizResultsHistory', JSON.stringify([result, ...prev]));
@@ -73,6 +76,7 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
         setAnswers({});
         setSubmitted(false);
         setQuizResults(items);
+        setSubmittedRetry(false);
     };
 
     const handleRetryWrong = () => {
@@ -91,6 +95,7 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
             return newAnswers;
         });
         setSubmitted(false);
+        setSubmittedRetry(true);
     };
 
     const wrongCount = quizResults.length - quizResults.filter(item => item.isCorrect).length;
