@@ -46,6 +46,21 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
         });
         setQuizResults(updatedResults);
         setSubmitted(true);
+
+        // 시험 결과 localStorage 저장
+        const correctCount = updatedResults.filter(item => item.isCorrect).length;
+        const wrongItems = updatedResults.filter(item => !item.isCorrect);
+        const now = new Date();
+        const range = `${items[0]?.korean} ~ ${items[items.length-1]?.korean}`;
+        const result = {
+            date: now.toLocaleString(),
+            range,
+            correctCount,
+            total: updatedResults.length,
+            wrongList: wrongItems.map(item => ({ korean: item.korean, correct: item.correctAnswer, user: item.userAnswer }))
+        };
+        const prev = JSON.parse(localStorage.getItem('quizResultsHistory') || '[]');
+        localStorage.setItem('quizResultsHistory', JSON.stringify([result, ...prev]));
     };
 
     useEffect(() => {
@@ -61,9 +76,20 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
     };
 
     const handleRetryWrong = () => {
-        const wrongItems = quizResults.filter(item => !item.isCorrect);
-        setQuizResults(wrongItems);
-        setAnswers({});
+        const newQuizResults = quizResults.map(item => {
+            if (item.isCorrect) return item;
+            return { ...item, userAnswer: '', isCorrect: undefined };
+        });
+        setQuizResults(newQuizResults);
+        setAnswers(() => {
+            const newAnswers: { [key: string]: string } = {};
+            quizResults.forEach(item => {
+                if (item.isCorrect) {
+                    newAnswers[item.correctAnswer] = item.userAnswer;
+                }
+            });
+            return newAnswers;
+        });
         setSubmitted(false);
     };
 
@@ -74,6 +100,17 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
     const lessonNumber = items.length > 0 && items[0].correctAnswer === 'air' ? 23 : 24;
 
     const allCorrect = submitted && wrongCount === 0;
+
+    // 미국식 발음 재생 함수
+    const speakUS = (word: string) => {
+        const utter = new window.SpeechSynthesisUtterance(word);
+        utter.lang = 'en-US';
+        // 미국식 음성 우선 선택
+        const voices = window.speechSynthesis.getVoices();
+        const usVoice = voices.find(v => v.lang === 'en-US');
+        if (usVoice) utter.voice = usVoice;
+        window.speechSynthesis.speak(utter);
+    };
 
     return (
         <div className="p-4 w-full flex flex-col items-center dark:bg-gray-900 dark:text-white">
@@ -103,7 +140,9 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
                     </button>
-                    <div className="text-lg font-semibold">{lessonNumber}과 (총 {items.length}문제)</div>
+                    <div className="text-lg font-semibold">
+                        {lessonNumber}과 ({items.length > 0 ? `${1}~${items.length}번` : ''})
+                    </div>
                 </div>
                 {submitted && (
                     <div className="text-lg">
@@ -132,23 +171,30 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
                     </div>
                 )}
             </div>
-            {(submitted
-                ? quizResults.filter(item => !item.isCorrect)
-                : quizResults
-            ).map((item, index) => (
+            {(quizResults).map((item, index) => (
                 <div
                     key={index}
                     className={`p-4 rounded-lg shadow mb-4 w-4/5 min-w-[20rem] ${
-                        submitted && item.isCorrect 
-                            ? "bg-green-100 dark:bg-green-900" 
-                            : submitted 
-                                ? "bg-red-100 dark:bg-red-900" 
+                        item.isCorrect
+                            ? "bg-green-100 dark:bg-green-900"
+                            : submitted
+                                ? "bg-red-100 dark:bg-red-900"
                                 : "bg-white dark:bg-gray-800"
                     }`}
                 >
                     <div className="text-lg font-semibold">
                         <span className="mr-2 text-gray-500 dark:text-gray-400">{index + 1}.</span>
-                        {submitted && (item.isCorrect ? "✔️" : "❌")} {item.korean}
+                        {item.isCorrect ? "✔️" : (submitted ? "❌" : "")} {item.korean}
+                        {submitted && (
+                            <button
+                                onClick={() => speakUS(item.correctAnswer)}
+                                className="ml-2 px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 text-sm"
+                                title="미국식 발음 듣기"
+                                type="button"
+                            >
+                                🔊
+                            </button>
+                        )}
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-300">
                         {item.partOfSpeech} {item.meaning}
@@ -162,7 +208,7 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
                                 onChange={(e) => handleAnswerChange(item.correctAnswer, e.target.value)}
                                 className="mt-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                                 placeholder="답을 입력하세요"
-                                disabled={submitted}
+                                disabled={item.isCorrect}
                             />
                         </div>
                         {submitted && !item.isCorrect && (
