@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import type { QuizItem } from '../data/quizData';
 import Confetti from "react-confetti";
 
-const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ items, onGoMain }) => {
+const QuizResult: React.FC<{ items: QuizItem[], lesson: 1 | 2 | 3 | 4 | 'all', onGoMain: () => void }> = ({ items, lesson, onGoMain }) => {
     const [answers, setAnswers] = useState<{ [key: string]: string }>({});
     const [submitted, setSubmitted] = useState(false);
     const [submittedRetry, setSubmittedRetry] = useState(false);
@@ -53,10 +53,9 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
         const correctCount = updatedResults.filter(item => item.isCorrect).length;
         const wrongItems = updatedResults.filter(item => !item.isCorrect);
         const now = new Date();
-        const range = `${items[0]?.korean} ~ ${items[items.length-1]?.korean}`;
         const result = {
             date: now.toLocaleString(),
-            range,
+            lesson: lesson === 'all' ? '전체' : `${lesson}과`,
             correctCount,
             total: updatedResults.length,
             wrongList: wrongItems.map(item => ({ korean: item.korean, correct: item.correctAnswer, user: item.userAnswer })),
@@ -102,7 +101,7 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
     const passOrFail = wrongCount >= 9 ? "탈락" : "통과";
 
     // 선택된 과 번호 추출
-    const lessonNumber = items.length > 0 && items[0].correctAnswer === 'air' ? 23 : 24;
+    const lessonTitle = lesson === 'all' ? '전체 (1~80번)' : `${lesson}과 (${(lesson - 1) * 20 + 1}~${lesson * 20}번)`;
 
     const allCorrect = submitted && wrongCount === 0;
 
@@ -145,9 +144,7 @@ const QuizResult: React.FC<{ items: QuizItem[], onGoMain: () => void }> = ({ ite
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
                     </button>
-                    <div className="text-lg font-semibold">
-                        {lessonNumber}과 ({items.length > 0 ? `${1}~${items.length}번` : ''})
-                    </div>
+                    <div className="text-lg font-semibold">{lessonTitle}</div>
                 </div>
                 {submitted && (
                     <div className="text-lg">

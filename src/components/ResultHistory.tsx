@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 type QuizResultHistory = {
     date: string;
-    range: string;
+    lesson: string;
     correctCount: number;
     total: number;
     wrongList: { korean: string; correct: string; user: string }[];
@@ -23,6 +23,13 @@ const ResultHistory: React.FC<{ onGoMain: () => void }> = ({ onGoMain }) => {
         localStorage.setItem('quizResultsHistory', JSON.stringify(newHistory));
     };
 
+    const handleDeleteAll = () => {
+        if (window.confirm('정말 모든 시험 결과를 삭제하시겠습니까?')) {
+            setHistory([]);
+            localStorage.removeItem('quizResultsHistory');
+        }
+    };
+
     return (
         <div className="flex flex-col items-center min-h-screen pt-20 dark:bg-gray-900 dark:text-white">
             <h2 className="text-2xl font-bold mb-6">저장된 시험 결과</h2>
@@ -36,7 +43,7 @@ const ResultHistory: React.FC<{ onGoMain: () => void }> = ({ onGoMain }) => {
                             {item.retry && (
                                 <div className="text-xs text-red-500 mb-1">틀린 문제 다시 풀기</div>
                             )}
-                            <div className="mb-1">범위: {item.range}</div>
+                            <div className="mb-1">과: {item.lesson}</div>
                             <div className="mb-1">정답: {item.correctCount} / {item.total}</div>
                             {item.wrongList.length > 0 && (
                                 <div className="mt-2">
@@ -58,12 +65,22 @@ const ResultHistory: React.FC<{ onGoMain: () => void }> = ({ onGoMain }) => {
                     ))}
                 </div>
             )}
-            <button
-                onClick={onGoMain}
-                className="px-6 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
-            >
-                처음으로
-            </button>
+            <div className="flex justify-center gap-4">
+                <button
+                    onClick={onGoMain}
+                    className="px-6 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
+                >
+                    처음으로
+                </button>
+                {history.length > 0 && (
+                    <button
+                        onClick={handleDeleteAll}
+                        className="px-6 py-2 rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
+                    >
+                        전체 삭제
+                    </button>
+                )}
+            </div>
         </div>
     );
 };
