@@ -1,32 +1,24 @@
 import React, { useState, useEffect } from 'react';
-
-type QuizResultHistory = {
-    date: string;
-    lesson: string;
-    correctCount: number;
-    total: number;
-    wrongList: { korean: string; correct: string; user: string }[];
-    retry: boolean;
-};
+import { getQuizResults, deleteQuizResult, deleteAllQuizResults, type QuizResultHistory } from '../utils/localStorage';
 
 const ResultHistory: React.FC<{ onGoMain: () => void }> = ({ onGoMain }) => {
     const [history, setHistory] = useState<QuizResultHistory[]>([]);
 
     useEffect(() => {
-        const data = JSON.parse(localStorage.getItem('quizResultsHistory') || '[]');
+        const data = getQuizResults();
         setHistory(data);
     }, []);
 
     const handleDelete = (idx: number) => {
-        const newHistory = history.filter((_, i) => i !== idx);
-        setHistory(newHistory);
-        localStorage.setItem('quizResultsHistory', JSON.stringify(newHistory));
+        deleteQuizResult(idx);
+        const updatedHistory = getQuizResults();
+        setHistory(updatedHistory);
     };
 
     const handleDeleteAll = () => {
         if (window.confirm('정말 모든 시험 결과를 삭제하시겠습니까?')) {
+            deleteAllQuizResults();
             setHistory([]);
-            localStorage.removeItem('quizResultsHistory');
         }
     };
 

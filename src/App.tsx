@@ -4,6 +4,7 @@ import QuizResult from "./components/QuizResult";
 import { quiz22_1, quiz22_2, quiz22_3, quiz22_4, quizResults22 } from "./data/quizData";
 import type { QuizItem } from "./data/quizData";
 import ResultHistory from "./components/ResultHistory";
+import { cleanExpiredQuizResults } from "./utils/localStorage";
 // import selectGif from './assets/cat.gif';
 
 export default function App() {
@@ -29,6 +30,11 @@ export default function App() {
         }
         localStorage.setItem('isDarkMode', String(isDarkMode));
     }, [isDarkMode]);
+
+    // 앱 시작시 만료된 퀴즈 결과 정리
+    useEffect(() => {
+        cleanExpiredQuizResults();
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors relative">

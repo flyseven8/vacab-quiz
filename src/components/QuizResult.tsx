@@ -1,6 +1,7 @@
 import '../index.css'
 import { useState, useEffect } from 'react';
 import type { QuizItem } from '../data/quizData';
+import { saveQuizResult } from '../utils/localStorage';
 import Confetti from "react-confetti";
 
 const QuizResult: React.FC<{ items: QuizItem[], lesson: 1 | 2 | 3 | 4 | 'all', onGoMain: () => void }> = ({ items, lesson, onGoMain }) => {
@@ -61,8 +62,7 @@ const QuizResult: React.FC<{ items: QuizItem[], lesson: 1 | 2 | 3 | 4 | 'all', o
             wrongList: wrongItems.map(item => ({ korean: item.korean, correct: item.correctAnswer, user: item.userAnswer })),
             retry: submittedRetry
         };
-        const prev = JSON.parse(localStorage.getItem('quizResultsHistory') || '[]');
-        localStorage.setItem('quizResultsHistory', JSON.stringify([result, ...prev]));
+        saveQuizResult(result);
     };
 
     useEffect(() => {
