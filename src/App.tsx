@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import './index.css'
 import QuizResult from "./components/QuizResult";
+import SpellingTypingGame from "./components/SpellingTypingGame";
 import { quiz22_1, quiz22_2, quiz22_3, quiz22_4, quizResults22 } from "./data/quizData";
 import type { QuizItem } from "./data/quizData";
 import ResultHistory from "./components/ResultHistory";
@@ -9,6 +10,7 @@ import { cleanExpiredQuizResults } from "./utils/localStorage";
 
 export default function App() {
     const [selected, setSelected] = useState<1 | 2 | 3 | 4 | 'all' | 'result' | null>(null);
+    const [gameMode, setGameMode] = useState<'quiz' | 'spelling-typing' | null>(null);
     const [shuffledItems, setShuffledItems] = useState<QuizItem[]>([]);
     const [isDarkMode, setIsDarkMode] = useState(() => {
         const savedMode = localStorage.getItem('isDarkMode');
@@ -56,40 +58,79 @@ export default function App() {
                     <div className="text-2xl font-bold mb-8 dark:text-white">시험 범위를 선택하세요.</div>
                     <div className="mb-6 flex w-full flex-col items-center gap-6 px-4">
                         <div className="flex flex-wrap justify-center gap-8">
-                            <button
-                                className="w-32 h-24 text-lg rounded-lg bg-blue-500 text-white shadow-lg hover:bg-blue-600 transition flex flex-col items-center justify-center leading-tight"
-                                onClick={() => { setSelected(1); setShuffledItems(shuffleArray(quiz22_1)); }}
-                            >
-                                <span>1과</span>
-                                <span className="text-sm">(1~20)</span>
-                            </button>
-                            <button
-                                className="w-32 h-24 text-lg rounded-lg bg-green-500 text-white shadow-lg hover:bg-green-600 transition flex flex-col items-center justify-center leading-tight"
-                                onClick={() => { setSelected(2); setShuffledItems(shuffleArray(quiz22_2)); }}
-                            >
-                                <span>2과</span>
-                                <span className="text-sm">(21~40)</span>
-                            </button>
-                            <button
-                                className="w-32 h-24 text-lg rounded-lg bg-yellow-500 text-white shadow-lg hover:bg-yellow-600 transition flex flex-col items-center justify-center leading-tight"
-                                onClick={() => { setSelected(3); setShuffledItems(shuffleArray(quiz22_3)); }}
-                            >
-                                <span>3과</span>
-                                <span className="text-sm">(41~60)</span>
-                            </button>
-                            <button
-                                className="w-32 h-24 text-lg rounded-lg bg-purple-500 text-white shadow-lg hover:bg-purple-600 transition flex flex-col items-center justify-center leading-tight"
-                                onClick={() => { setSelected(4); setShuffledItems(shuffleArray(quiz22_4)); }}
-                            >
-                                <span>4과</span>
-                                <span className="text-sm">(61~80)</span>
-                            </button>
+                            <div className="flex flex-col gap-2">
+                                <button
+                                    className="w-32 h-24 text-lg rounded-lg bg-blue-500 text-white shadow-lg hover:bg-blue-600 transition flex flex-col items-center justify-center leading-tight"
+                                    onClick={() => { setSelected(1); setShuffledItems(shuffleArray(quiz22_1)); }}
+                                >
+                                    <span>1과</span>
+                                    <span className="text-sm">(1~20)</span>
+                                </button>
+                                <button
+                                    className="w-32 h-16 text-sm rounded-lg bg-blue-300 text-white shadow-lg hover:bg-blue-400 transition flex items-center justify-center"
+                                    onClick={() => { setSelected(1); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quiz22_1)); }}
+                                >
+                                    타자 게임
+                                </button>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <button
+                                    className="w-32 h-24 text-lg rounded-lg bg-green-500 text-white shadow-lg hover:bg-green-600 transition flex flex-col items-center justify-center leading-tight"
+                                    onClick={() => { setSelected(2); setShuffledItems(shuffleArray(quiz22_2)); }}
+                                >
+                                    <span>2과</span>
+                                    <span className="text-sm">(21~40)</span>
+                                </button>
+                                <button
+                                    className="w-32 h-16 text-sm rounded-lg bg-green-300 text-white shadow-lg hover:bg-green-400 transition flex items-center justify-center"
+                                    onClick={() => { setSelected(2); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quiz22_2)); }}
+                                >
+                                    타자 게임
+                                </button>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <button
+                                    className="w-32 h-24 text-lg rounded-lg bg-yellow-500 text-white shadow-lg hover:bg-yellow-600 transition flex flex-col items-center justify-center leading-tight"
+                                    onClick={() => { setSelected(3); setShuffledItems(shuffleArray(quiz22_3)); }}
+                                >
+                                    <span>3과</span>
+                                    <span className="text-sm">(41~60)</span>
+                                </button>
+                                <button
+                                    className="w-32 h-16 text-sm rounded-lg bg-yellow-300 text-white shadow-lg hover:bg-yellow-400 transition flex items-center justify-center"
+                                    onClick={() => { setSelected(3); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quiz22_3)); }}
+                                >
+                                    타자 게임
+                                </button>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <button
+                                    className="w-32 h-24 text-lg rounded-lg bg-purple-500 text-white shadow-lg hover:bg-purple-600 transition flex flex-col items-center justify-center leading-tight"
+                                    onClick={() => { setSelected(4); setShuffledItems(shuffleArray(quiz22_4)); }}
+                                >
+                                    <span>4과</span>
+                                    <span className="text-sm">(61~80)</span>
+                                </button>
+                                <button
+                                    className="w-32 h-16 text-sm rounded-lg bg-purple-300 text-white shadow-lg hover:bg-purple-400 transition flex items-center justify-center"
+                                    onClick={() => { setSelected(4); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quiz22_4)); }}
+                                >
+                                    타자 게임
+                                </button>
+                            </div>
                         </div>
                         <button
                             className="px-12 py-8 text-xl rounded-lg bg-pink-500 text-white shadow-lg hover:bg-pink-600 transition w-full max-w-md flex flex-col items-center justify-center leading-tight"
                             onClick={() => { setSelected('all'); setShuffledItems(shuffleArray(quizResults22)); }}
                         >
                             <span>전체</span>
+                            <span className="text-sm">(1~80)</span>
+                        </button>
+                        <button
+                            className="px-12 py-8 text-xl rounded-lg bg-red-500 text-white shadow-lg hover:bg-red-600 transition w-full max-w-md flex flex-col items-center justify-center leading-tight"
+                            onClick={() => { setSelected('all'); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quizResults22)); }}
+                        >
+                            <span>타자 게임</span>
                             <span className="text-sm">(1~80)</span>
                         </button>
                     </div>
@@ -104,6 +145,11 @@ export default function App() {
                 </div>
             ) : selected === 'result' ? (
                 <ResultHistory onGoMain={() => setSelected(null)} />
+            ) : gameMode === 'spelling-typing' ? (
+                // SpellingTypingGame으로 이동
+                <div className="pt-20">
+                    <SpellingTypingGame items={shuffledItems} onGoMain={() => { setSelected(null); setGameMode(null); }} />
+                </div>
             ) : (
                 // QuizResult로 이동
                 <div className="pt-20">
