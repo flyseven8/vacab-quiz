@@ -39,14 +39,14 @@ export default function App() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors relative">
+        <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-green-800 transition-colors relative">
             {selected === null && (
-                <div className="fixed top-32 left-1/2 -translate-x-1/2 z-50 text-4xl font-extrabold text-gray-800 dark:text-white">
-                    21급 단어 급수제
+                <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 text-3xl font-bold text-white">
+                    승급전
                 </div>
             )}
             <button
-                className="fixed top-4 right-4 p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white z-50"
+                className="fixed top-4 right-4 p-3 rounded-full bg-white/20 backdrop-blur-sm text-white z-50 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110"
                 onClick={() => setIsDarkMode(!isDarkMode)}
             >
                 {isDarkMode ? '🌞' : '🌙'}
@@ -54,93 +54,92 @@ export default function App() {
 
             {selected === null ? (
                 // 선택 화면
-                <div className="flex flex-col items-center justify-center min-h-screen pt-20">
-                    <div className="text-2xl font-bold mb-8 dark:text-white">시험 범위를 선택하세요.</div>
-                    <div className="mb-6 flex w-full flex-col items-center gap-6 px-4">
-                        <div className="flex flex-wrap justify-center gap-8">
+                <div className="flex flex-col min-h-screen pt-20 px-4">
+                    <div className="flex flex-col gap-4 max-w-4xl mx-auto w-full">
+                        <div className="grid grid-cols-2 gap-3">
                             <div className="flex flex-col gap-2">
-                                <button
-                                    className="w-32 h-24 text-lg rounded-lg bg-blue-500 text-white shadow-lg hover:bg-blue-600 transition flex flex-col items-center justify-center leading-tight"
-                                    onClick={() => { setSelected(1); setShuffledItems(shuffleArray(quiz22_1)); }}
-                                >
-                                    <span>1과</span>
-                                    <span className="text-sm">(1~20)</span>
-                                </button>
-                                <button
-                                    className="w-32 h-16 text-sm rounded-lg bg-blue-300 text-white shadow-lg hover:bg-blue-400 transition flex items-center justify-center"
-                                    onClick={() => { setSelected(1); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quiz22_1)); }}
-                                >
-                                    타자 게임
-                                </button>
+                                                                 <button
+                                     className="w-full h-24 rounded-2xl bg-white/20 backdrop-blur-sm text-white shadow-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-105 flex flex-col items-center justify-center leading-tight font-semibold border border-white/20"
+                                     onClick={() => { setSelected(1); setShuffledItems(shuffleArray(quiz22_1)); }}
+                                 >
+                                     <span className="text-lg">1과</span>
+                                     <span className="text-xs opacity-80">(1~40)</span>
+                                 </button>
+                                                                 <button
+                                     className="w-full h-12 text-sm rounded-xl bg-white/15 backdrop-blur-sm text-white shadow-md hover:bg-white/25 transition-all duration-200 transform hover:scale-102 flex items-center justify-center font-medium border border-white/15"
+                                     onClick={() => { setSelected(1); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quiz22_1)); }}
+                                 >
+                                     타자 게임
+                                 </button>
                             </div>
                             <div className="flex flex-col gap-2">
-                                <button
-                                    className="w-32 h-24 text-lg rounded-lg bg-green-500 text-white shadow-lg hover:bg-green-600 transition flex flex-col items-center justify-center leading-tight"
-                                    onClick={() => { setSelected(2); setShuffledItems(shuffleArray(quiz22_2)); }}
-                                >
-                                    <span>2과</span>
-                                    <span className="text-sm">(21~40)</span>
-                                </button>
-                                <button
-                                    className="w-32 h-16 text-sm rounded-lg bg-green-300 text-white shadow-lg hover:bg-green-400 transition flex items-center justify-center"
-                                    onClick={() => { setSelected(2); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quiz22_2)); }}
-                                >
-                                    타자 게임
-                                </button>
+                                                                 <button
+                                     className="w-full h-24 rounded-2xl bg-white/20 backdrop-blur-sm text-white shadow-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-105 flex flex-col items-center justify-center leading-tight font-semibold border border-white/20"
+                                     onClick={() => { setSelected(2); setShuffledItems(shuffleArray(quiz22_2)); }}
+                                 >
+                                     <span className="text-lg">2과</span>
+                                     <span className="text-xs opacity-80">(41~80)</span>
+                                 </button>
+                                                                 <button
+                                     className="w-full h-12 text-sm rounded-xl bg-white/15 backdrop-blur-sm text-white shadow-md hover:bg-white/25 transition-all duration-200 transform hover:scale-102 flex items-center justify-center font-medium border border-white/15"
+                                     onClick={() => { setSelected(2); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quiz22_2)); }}
+                                 >
+                                     타자 게임
+                                 </button>
                             </div>
                             <div className="flex flex-col gap-2">
-                                <button
-                                    className="w-32 h-24 text-lg rounded-lg bg-yellow-500 text-white shadow-lg hover:bg-yellow-600 transition flex flex-col items-center justify-center leading-tight"
-                                    onClick={() => { setSelected(3); setShuffledItems(shuffleArray(quiz22_3)); }}
-                                >
-                                    <span>3과</span>
-                                    <span className="text-sm">(41~60)</span>
-                                </button>
-                                <button
-                                    className="w-32 h-16 text-sm rounded-lg bg-yellow-300 text-white shadow-lg hover:bg-yellow-400 transition flex items-center justify-center"
-                                    onClick={() => { setSelected(3); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quiz22_3)); }}
-                                >
-                                    타자 게임
-                                </button>
+                                                                 <button
+                                     className="w-full h-24 rounded-2xl bg-white/20 backdrop-blur-sm text-white shadow-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-105 flex flex-col items-center justify-center leading-tight font-semibold border border-white/20"
+                                     onClick={() => { setSelected(3); setShuffledItems(shuffleArray(quiz22_3)); }}
+                                 >
+                                     <span className="text-lg">3과</span>
+                                     <span className="text-xs opacity-80">(81~120)</span>
+                                 </button>
+                                                                 <button
+                                     className="w-full h-12 text-sm rounded-xl bg-white/15 backdrop-blur-sm text-white shadow-md hover:bg-white/25 transition-all duration-200 transform hover:scale-102 flex items-center justify-center font-medium border border-white/15"
+                                     onClick={() => { setSelected(3); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quiz22_3)); }}
+                                 >
+                                     타자 게임
+                                 </button>
                             </div>
                             <div className="flex flex-col gap-2">
-                                <button
-                                    className="w-32 h-24 text-lg rounded-lg bg-purple-500 text-white shadow-lg hover:bg-purple-600 transition flex flex-col items-center justify-center leading-tight"
-                                    onClick={() => { setSelected(4); setShuffledItems(shuffleArray(quiz22_4)); }}
-                                >
-                                    <span>4과</span>
-                                    <span className="text-sm">(61~80)</span>
-                                </button>
-                                <button
-                                    className="w-32 h-16 text-sm rounded-lg bg-purple-300 text-white shadow-lg hover:bg-purple-400 transition flex items-center justify-center"
-                                    onClick={() => { setSelected(4); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quiz22_4)); }}
-                                >
-                                    타자 게임
-                                </button>
+                                                                 <button
+                                     className="w-full h-24 rounded-2xl bg-white/20 backdrop-blur-sm text-white shadow-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-105 flex flex-col items-center justify-center leading-tight font-semibold border border-white/20"
+                                     onClick={() => { setSelected(4); setShuffledItems(shuffleArray(quiz22_4)); }}
+                                 >
+                                     <span className="text-lg">4과</span>
+                                     <span className="text-xs opacity-80">(121~160)</span>
+                                 </button>
+                                                                 <button
+                                     className="w-full h-12 text-sm rounded-xl bg-white/15 backdrop-blur-sm text-white shadow-md hover:bg-white/25 transition-all duration-200 transform hover:scale-102 flex items-center justify-center font-medium border border-white/15"
+                                     onClick={() => { setSelected(4); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quiz22_4)); }}
+                                 >
+                                     타자 게임
+                                 </button>
                             </div>
                         </div>
                         <button
-                            className="px-12 py-8 text-xl rounded-lg bg-pink-500 text-white shadow-lg hover:bg-pink-600 transition w-full max-w-md flex flex-col items-center justify-center leading-tight"
+                            className="px-6 py-5 text-lg rounded-2xl bg-white/20 backdrop-blur-sm text-white shadow-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-105 w-full flex flex-col items-center justify-center leading-tight font-semibold border border-white/20"
                             onClick={() => { setSelected('all'); setShuffledItems(shuffleArray(quizResults22)); }}
                         >
                             <span>전체</span>
-                            <span className="text-sm">(1~80)</span>
+                            <span className="text-sm opacity-80">(1~160)</span>
                         </button>
                         <button
-                            className="px-12 py-8 text-xl rounded-lg bg-red-500 text-white shadow-lg hover:bg-red-600 transition w-full max-w-md flex flex-col items-center justify-center leading-tight"
+                            className="px-6 py-5 text-lg rounded-2xl bg-white/20 backdrop-blur-sm text-white shadow-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-105 w-full flex flex-col items-center justify-center leading-tight font-semibold border border-white/20"
                             onClick={() => { setSelected('all'); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quizResults22)); }}
                         >
                             <span>타자 게임</span>
-                            <span className="text-sm">(1~80)</span>
+                            <span className="text-sm opacity-80">(1~160)</span>
                         </button>
                     </div>
-                    <div>
-                        <span
-                            className="underline text-blue-600 dark:text-blue-300 cursor-pointer text-lg"
+                    <div className="mt-6 flex justify-center">
+                        <button
+                            className="px-8 py-4 rounded-2xl bg-white/20 backdrop-blur-sm text-white shadow-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-105 font-medium border border-white/20"
                             onClick={() => setSelected('result')}
                         >
                             결과확인
-                        </span>
+                        </button>
                     </div>
                 </div>
             ) : selected === 'result' ? (

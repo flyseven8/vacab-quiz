@@ -2,12 +2,14 @@ export type QuizItem = {
     korean: string;
     partOfSpeech: string;
     meaning: string;
-userAnswer: string;
-correctAnswer: string;
-isCorrect?: boolean;
+    userAnswer: string;
+    correctAnswer: string;
+    isCorrect?: boolean;
 }
 
+// 160개 단어 전체 데이터
 export const quizResults22: QuizItem[] = [
+    // 1-40: 음식과 과일
     { userAnswer: "", correctAnswer: "cereal", partOfSpeech: "n.", meaning: "a food that is made from grain and eaten with milk, especially in the morning", korean: "시리얼" },
     { userAnswer: "", correctAnswer: "meat", partOfSpeech: "n.", meaning: "the flesh of an animal when it is used for food", korean: "고기" },
     { userAnswer: "", correctAnswer: "omelet", partOfSpeech: "n.", meaning: "eggs with their yellow and transparent parts mixed together, cooked in a pan, and usually folded over some other food", korean: "오믈렛" },
@@ -40,14 +42,16 @@ export const quizResults22: QuizItem[] = [
     { userAnswer: "", correctAnswer: "toilet", partOfSpeech: "n.", meaning: "a bowl-shaped device with a seat that you sit on or stand near when emptying the body of urine or solid waste", korean: "화장실" },
     { userAnswer: "", correctAnswer: "apron", partOfSpeech: "n.", meaning: "a piece of clothing that you wear over the front of other clothes to keep the clothes clean while you are doing something dirty", korean: "앞치마" },
     { userAnswer: "", correctAnswer: "belt", partOfSpeech: "n.", meaning: "a strip of leather or material worn around the waist to support clothes or for decoration", korean: "허리띠" },
-    { userAnswer: "", correctAnswer: "gown", partOfSpeech: "n.", meaning: "a woman's dress, especially a long one worn on formal occasions", korean: "가운" },
+    { userAnswer: "", correctAnswer: "gown", partOfSpeech: "n.", meaning: "a woman's dress, especially a long one worn on formal occasions", korean: "드레스" },
     { userAnswer: "", correctAnswer: "handkerchief", partOfSpeech: "n.", meaning: "a square piece of cloth or paper used for cleaning the nose or drying the eyes when they are wet with tears", korean: "손수건" },
     { userAnswer: "", correctAnswer: "pajamas", partOfSpeech: "n.", meaning: "soft, loose clothing that is worn in bed and consists of trousers and a type of shirt", korean: "파자마" },
     { userAnswer: "", correctAnswer: "robe", partOfSpeech: "n.", meaning: "a long, loose piece of clothing worn especially on very formal occasions", korean: "예복" },
     { userAnswer: "", correctAnswer: "sandals", partOfSpeech: "n.", meaning: "a light shoe, especially worn in warm weather, consisting of a bottom part held onto the foot by straps", korean: "샌들" },
     { userAnswer: "", correctAnswer: "shorts", partOfSpeech: "n.", meaning: "trousers that end above the knee or reach the knee, often worn in hot weather or when playing a sport", korean: "반바지" },
-    { userAnswer: "", correctAnswer: "tie", partOfSpeech: "n.", meaning: "to fasten together two ends of a piece of string or other long, thin material", korean: "넥타이" },
+    { userAnswer: "", correctAnswer: "tie", partOfSpeech: "n.", meaning: "a long, thin piece of cloth that is worn around the neck under a shirt collar", korean: "넥타이" },
     { userAnswer: "", correctAnswer: "wig", partOfSpeech: "n.", meaning: "a covering of artificial hair worn on the head to hide a loss of hair or to cover your own hair", korean: "가발" },
+
+    // 41-80: 동물과 음료
     { userAnswer: "", correctAnswer: "bear", partOfSpeech: "n.", meaning: "a large, strong wild mammal with a thick fur coat", korean: "곰" },
     { userAnswer: "", correctAnswer: "elephant", partOfSpeech: "n.", meaning: "a very large grey mammal that has a long nose with which it can pick things up", korean: "코끼리" },
     { userAnswer: "", correctAnswer: "giraffe", partOfSpeech: "n.", meaning: "a large African animal with a very long neck and long legs", korean: "기린" },
@@ -60,13 +64,13 @@ export const quizResults22: QuizItem[] = [
     { userAnswer: "", correctAnswer: "zebra", partOfSpeech: "n.", meaning: "an African wild animal that looks like a horse, with black or brown and white lines on its body", korean: "얼룩말" },
     { userAnswer: "", correctAnswer: "coffee", partOfSpeech: "n.", meaning: "a dark brown powder with a strong flavour and smell that is made by crushing coffee beans", korean: "커피" },
     { userAnswer: "", correctAnswer: "hot chocolate", partOfSpeech: "n.", meaning: "a hot drink made from milk and/or water, powdered chocolate, and sugar", korean: "코코아" },
-    { userAnswer: "", correctAnswer: "iced tea", partOfSpeech: "n.", meaning: "tea that is served cold, sometimes with ice, or a glass of this drink", korean: "아이스티" },
+    { userAnswer: "", correctAnswer: "iced tea", partOfSpeech: "n.", meaning: "tea that is served cold, sometimes with ice, or a glass of this drink", korean: "아이스 티" },
     { userAnswer: "", correctAnswer: "juice", partOfSpeech: "n.", meaning: "the liquid that comes from fruit or vegetables", korean: "주스" },
     { userAnswer: "", correctAnswer: "lemonade", partOfSpeech: "n.", meaning: "a drink made with the juice of lemons, water, and sugar", korean: "레모네이드" },
     { userAnswer: "", correctAnswer: "milk", partOfSpeech: "n.", meaning: "the white liquid produced by cows, goats, and sheep and used by humans as a drink or for making butter, cheese, etc.", korean: "우유" },
     { userAnswer: "", correctAnswer: "milkshake", partOfSpeech: "n.", meaning: "a drink made of milk and usually ice cream and a flavour such as fruit or chocolate, mixed together until it is smooth", korean: "밀크셰이크" },
     { userAnswer: "", correctAnswer: "soda", partOfSpeech: "n.", meaning: "any type of sweet fizzy drink (= with bubbles) that is not alcoholic", korean: "소다" },
-    { userAnswer: "", correctAnswer: "sports drink", partOfSpeech: "n.", meaning: "a soft drink designed or marketed for consumption in conjunction with sporting activity", korean: "스포츠 드링크" },
+    { userAnswer: "", correctAnswer: "sports drink", partOfSpeech: "n.", meaning: "a soft drink designed or marketed for consumption in conjunction with sporting activity", korean: "스포츠 음료" },
     { userAnswer: "", correctAnswer: "tea", partOfSpeech: "n.", meaning: "a drink made by pouring hot water onto dried and cut leaves and sometimes flowers, especially the leaves of the tea plant", korean: "차" },
     { userAnswer: "", correctAnswer: "bookcase", partOfSpeech: "n.", meaning: "a piece of furniture with shelves to put books on", korean: "책장" },
     { userAnswer: "", correctAnswer: "chair", partOfSpeech: "n.", meaning: "a seat for one person that has a back, usually four legs, and sometimes two arms", korean: "의자" },
@@ -87,10 +91,95 @@ export const quizResults22: QuizItem[] = [
     { userAnswer: "", correctAnswer: "ostrich", partOfSpeech: "n.", meaning: "a very large bird from Africa that cannot fly", korean: "타조" },
     { userAnswer: "", correctAnswer: "peacock", partOfSpeech: "n.", meaning: "a large bird that has very long tail with bright colours and patterns shaped like eyes, which it can spread out like a fan", korean: "공작" },
     { userAnswer: "", correctAnswer: "pelican", partOfSpeech: "n.", meaning: "a large bird that has a large, bag-shaped beak", korean: "펠리컨" },
-    { userAnswer: "", correctAnswer: "sparrow", partOfSpeech: "n.", meaning: "a small, grey-brown bird that is especially common in towns", korean: "참새" }
+    { userAnswer: "", correctAnswer: "sparrow", partOfSpeech: "n.", meaning: "a small, grey-brown bird that is especially common in towns", korean: "참새" },
+
+    // 81-120: 다양한 동사와 형용사
+    { userAnswer: "", correctAnswer: "arrive", partOfSpeech: "v.", meaning: "to reach a place, especially at the end of a journey", korean: "도착하다" },
+    { userAnswer: "", correctAnswer: "base", partOfSpeech: "n.", meaning: "the bottom part of an object, on which it rests, or the lowest part of something", korean: "기초" },
+    { userAnswer: "", correctAnswer: "beard", partOfSpeech: "n.", meaning: "the hair that some men allow to grow on the lower part of their face", korean: "수염" },
+    { userAnswer: "", correctAnswer: "corner", partOfSpeech: "n.", meaning: "the point, area, or line that is formed by the meeting of two lines, surfaces, roads, etc.", korean: "모퉁이" },
+    { userAnswer: "", correctAnswer: "loud", partOfSpeech: "adj.", meaning: "making a lot of noise", korean: "소란스러운" },
+    { userAnswer: "", correctAnswer: "magic", partOfSpeech: "n.", meaning: "the use of special powers to make things happen that would usually be impossible, such as in stories for children", korean: "마술" },
+    { userAnswer: "", correctAnswer: "mustache", partOfSpeech: "n.", meaning: "hair that a man grows above his upper lip", korean: "코밑수염" },
+    { userAnswer: "", correctAnswer: "noise", partOfSpeech: "n.", meaning: "a sound or sounds, especially when it is unwanted, unpleasant, or loud", korean: "잡음" },
+    { userAnswer: "", correctAnswer: "shout", partOfSpeech: "v.", meaning: "to speak with a very loud voice, often as loud as possible", korean: "소리치다" },
+    { userAnswer: "", correctAnswer: "tear", partOfSpeech: "v.", meaning: "to pull or be pulled apart, or to pull pieces off", korean: "찢다" },
+    { userAnswer: "", correctAnswer: "according to", partOfSpeech: "phr.", meaning: "as stated by", korean: "따르면" },
+    { userAnswer: "", correctAnswer: "appear", partOfSpeech: "v.", meaning: "to start to be seen or to be present", korean: "나타나다" },
+    { userAnswer: "", correctAnswer: "experience", partOfSpeech: "n.", meaning: "knowledge or skill from doing, seeing, or feeling things", korean: "경험" },
+    { userAnswer: "", correctAnswer: "god", partOfSpeech: "n.", meaning: "a spirit or being believed to control some part of the universe or life and often worshipped", korean: "신" },
+    { userAnswer: "", correctAnswer: "paragraph", partOfSpeech: "n.", meaning: "a short part of a text, consisting of at least one sentence and beginning on a new line", korean: "단락" },
+    { userAnswer: "", correctAnswer: "rise", partOfSpeech: "v.", meaning: "to move upwards", korean: "일어나다" },
+    { userAnswer: "", correctAnswer: "scared", partOfSpeech: "adj.", meaning: "frightened or worried", korean: "겁먹은" },
+    { userAnswer: "", correctAnswer: "seat", partOfSpeech: "n.", meaning: "a piece of furniture or part of a train, plane, etc. that has been designed for someone to sit on", korean: "의자" },
+    { userAnswer: "", correctAnswer: "shoot", partOfSpeech: "v.", meaning: "to fire a bullet or an arrow, or to hit, injure, or kill a person or animal by firing a bullet or arrow at him, her, or it", korean: "쏘다" },
+    { userAnswer: "", correctAnswer: "suggest", partOfSpeech: "v.", meaning: "to mention an idea, possible plan, or action for other people to consider", korean: "제안하다" },
+    { userAnswer: "", correctAnswer: "chopsticks", partOfSpeech: "n.", meaning: "a pair of narrow sticks that are used for eating East Asian food", korean: "젓가락" },
+    { userAnswer: "", correctAnswer: "effect", partOfSpeech: "n.", meaning: "the result of a particular influence", korean: "결과" },
+    { userAnswer: "", correctAnswer: "explain", partOfSpeech: "v.", meaning: "to make something clear or easy to understand by describing or giving information about it", korean: "설명하다" },
+    { userAnswer: "", correctAnswer: "extra", partOfSpeech: "adj.", meaning: "added to what is normal", korean: "추가의" },
+    { userAnswer: "", correctAnswer: "half", partOfSpeech: "n.", meaning: "either of the two equal or nearly equal parts that together make up a whole", korean: "절반" },
+    { userAnswer: "", correctAnswer: "skill", partOfSpeech: "n.", meaning: "an ability to do an activity or job well, especially because you have practised it", korean: "기술" },
+    { userAnswer: "", correctAnswer: "thankful", partOfSpeech: "adj.", meaning: "happy or grateful because of something", korean: "고맙게 생각하는" },
+    { userAnswer: "", correctAnswer: "video", partOfSpeech: "n.", meaning: "a recording of moving pictures and sound, especially as a digital file, DVD, etc.", korean: "비디오" },
+    { userAnswer: "", correctAnswer: "whole", partOfSpeech: "adj.", meaning: "complete or not divided", korean: "전체의" },
+    { userAnswer: "", correctAnswer: "worry", partOfSpeech: "v.", meaning: "to think about problems or unpleasant things that might happen in a way that makes you feel unhappy and frightened", korean: "걱정하다" },
+    { userAnswer: "", correctAnswer: "allow", partOfSpeech: "v.", meaning: "to give permission for someone to do something, or to not prevent something from happening", korean: "허락하다" },
+    { userAnswer: "", correctAnswer: "character", partOfSpeech: "n.", meaning: "a person represented in a film, play, or story", korean: "등장인물" },
+    { userAnswer: "", correctAnswer: "dangerous", partOfSpeech: "adj.", meaning: "able or likely to cause harm or death, or unpleasant problems", korean: "위험한" },
+    { userAnswer: "", correctAnswer: "include", partOfSpeech: "v.", meaning: "to contain something as a part of something else, or to make something part of something else", korean: "포함하다" },
+    { userAnswer: "", correctAnswer: "kitten", partOfSpeech: "n.", meaning: "a very young cat", korean: "새끼 고양이" },
+    { userAnswer: "", correctAnswer: "mistake", partOfSpeech: "n.", meaning: "an action, decision, or judgment that produces an unwanted or unintentional result", korean: "실수" },
+    { userAnswer: "", correctAnswer: "radio", partOfSpeech: "n.", meaning: "a piece of electronic equipment used for listening to radio broadcasts", korean: "라디오" },
+    { userAnswer: "", correctAnswer: "ready", partOfSpeech: "adj.", meaning: "prepared and suitable for fast activity", korean: "준비가 된" },
+    { userAnswer: "", correctAnswer: "rock", partOfSpeech: "n.", meaning: "the dry solid part of the earth's surface, or any large piece of this that sticks up out of the ground or the sea", korean: "암석" },
+    { userAnswer: "", correctAnswer: "upside down", partOfSpeech: "phr.", meaning: "having the part that is usually at the top turned to be at the bottom", korean: "거꾸로" },
+
+    // 121-160: 스포츠와 기타 단어들
+    { userAnswer: "", correctAnswer: "badminton", partOfSpeech: "n.", meaning: "a sport in which two or 4 people hit a shuttlecock over a high net", korean: "배드민턴" },
+    { userAnswer: "", correctAnswer: "football", partOfSpeech: "n.", meaning: "a game for two teams of 11 players in which an oval ball is moved along the field by running with it or throwing it", korean: "미식축구" },
+    { userAnswer: "", correctAnswer: "health", partOfSpeech: "n.", meaning: "the condition of the body", korean: "건강" },
+    { userAnswer: "", correctAnswer: "hockey", partOfSpeech: "n.", meaning: "an outdoor game played between two teams of 11 players who use long curved sticks to hit a small ball and try to score goals", korean: "하키" },
+    { userAnswer: "", correctAnswer: "hunt", partOfSpeech: "v.", meaning: "to chase and try to catch and kill an animal", korean: "사냥하다" },
+    { userAnswer: "", correctAnswer: "rugby", partOfSpeech: "n.", meaning: "a sport where two teams try to score points by carrying an oval ball across a particular line and between an H-shaped set of posts", korean: "럭비" },
+    { userAnswer: "", correctAnswer: "ski", partOfSpeech: "v.", meaning: "to move over snow on skis", korean: "스키를 타다" },
+    { userAnswer: "", correctAnswer: "tired", partOfSpeech: "adj.", meaning: "in need of rest or sleep", korean: "피곤한" },
+    { userAnswer: "", correctAnswer: "volleyball", partOfSpeech: "n.", meaning: "a game in which two teams use their hands to hit a large ball backwards and forwards over a high net", korean: "배구" },
+    { userAnswer: "", correctAnswer: "yoga", partOfSpeech: "n.", meaning: "a set of physical and mental exercises, originally from India, intended to give control over the body and mind", korean: "요가" },
+    { userAnswer: "", correctAnswer: "bit", partOfSpeech: "n.", meaning: "a small piece or amount of something", korean: "조금" },
+    { userAnswer: "", correctAnswer: "collect", partOfSpeech: "v.", meaning: "to get and keep things of one type such as stamps or coins as a hobby", korean: "모으다" },
+    { userAnswer: "", correctAnswer: "conversation", partOfSpeech: "n.", meaning: "a talk between two or more people in which thoughts, feelings, and ideas are expressed, questions are asked and answered", korean: "대화" },
+    { userAnswer: "", correctAnswer: "event", partOfSpeech: "n.", meaning: "anything that happens, especially something important or unusual", korean: "행사" },
+    { userAnswer: "", correctAnswer: "main", partOfSpeech: "adj.", meaning: "larger, more important, or having more influence than others of the same type", korean: "주요한" },
+    { userAnswer: "", correctAnswer: "meaning", partOfSpeech: "n.", meaning: "what something expresses or represents", korean: "의미" },
+    { userAnswer: "", correctAnswer: "seem", partOfSpeech: "v.", meaning: "to give the effect of being; to be judged to be", korean: "~처럼 보이다" },
+    { userAnswer: "", correctAnswer: "sign", partOfSpeech: "n.", meaning: "a notice giving information, directions, a warning, etc.", korean: "표지판" },
+    { userAnswer: "", correctAnswer: "stranger", partOfSpeech: "n.", meaning: "someone you do not know", korean: "낯선 사람" },
+    { userAnswer: "", correctAnswer: "type", partOfSpeech: "n.", meaning: "a particular group of people or things that share similar characteristics and form a smaller division of a larger set", korean: "유형" },
+    { userAnswer: "", correctAnswer: "colorful", partOfSpeech: "adj.", meaning: "having bright colours or a lot of different colours", korean: "다채로운" },
+    { userAnswer: "", correctAnswer: "continue", partOfSpeech: "v.", meaning: "to keep happening, existing, or doing something, or to cause something or someone to do this", korean: "계속하다" },
+    { userAnswer: "", correctAnswer: "early", partOfSpeech: "adj.", meaning: "near the beginning of a period of time, or before the usual, expected, or planned time", korean: "일찍" },
+    { userAnswer: "", correctAnswer: "feed", partOfSpeech: "v.", meaning: "to give food to a person, group, or animal", korean: "밥을 먹이다" },
+    { userAnswer: "", correctAnswer: "little", partOfSpeech: "adj.", meaning: "small in size or amount", korean: "작은" },
+    { userAnswer: "", correctAnswer: "model", partOfSpeech: "n.", meaning: "something that a copy can be based on because it is an extremely good example of its type", korean: "모델" },
+    { userAnswer: "", correctAnswer: "quarter", partOfSpeech: "n.", meaning: "one of four equal or almost equal parts of something; ¼", korean: "4분의 1" },
+    { userAnswer: "", correctAnswer: "suddenly", partOfSpeech: "adv.", meaning: "quickly and unexpectedly", korean: "갑자기" },
+    { userAnswer: "", correctAnswer: "support", partOfSpeech: "v.", meaning: "to agree with and give encouragement to someone or something because you want him, her, or it to succeed", korean: "지원하다" },
+    { userAnswer: "", correctAnswer: "treat", partOfSpeech: "v.", meaning: "to use drugs, exercises, etc. to cure a person of a disease or heal an injury", korean: "치료하다" },
+    { userAnswer: "", correctAnswer: "dead", partOfSpeech: "adj.", meaning: "not now living", korean: "죽은" },
+    { userAnswer: "", correctAnswer: "doll", partOfSpeech: "n.", meaning: "a child's toy in the shape of a small person or baby", korean: "인형" },
+    { userAnswer: "", correctAnswer: "dream", partOfSpeech: "n.", meaning: "a series of events or images that happen in your mind when you are sleeping", korean: "꿈" },
+    { userAnswer: "", correctAnswer: "everyone", partOfSpeech: "pron.", meaning: "every person", korean: "모든사람" },
+    { userAnswer: "", correctAnswer: "gun", partOfSpeech: "n.", meaning: "a weapon that bullets or shells (= explosive containers) are fired from", korean: "총" },
+    { userAnswer: "", correctAnswer: "lucky", partOfSpeech: "adj.", meaning: "having good things happen to you by chance", korean: "운이 좋은" },
+    { userAnswer: "", correctAnswer: "noon", partOfSpeech: "n.", meaning: "twelve o'clock in the middle of the day, or about that time", korean: "정오" },
+    { userAnswer: "", correctAnswer: "straight", partOfSpeech: "adj.", meaning: "continuing in one direction without bending or curving", korean: "곧은" },
+    { userAnswer: "", correctAnswer: "unlucky", partOfSpeech: "adj.", meaning: "not lucky", korean: "불운한" },
+    { userAnswer: "", correctAnswer: "worse", partOfSpeech: "adj.", meaning: "more unpleasant, difficult, or severe than before or than something else that is also bad", korean: "보다 나쁜" }
 ];
 
-export const quiz22_1: QuizItem[] = quizResults22.slice(0, 20);
-export const quiz22_2: QuizItem[] = quizResults22.slice(20, 40);
-export const quiz22_3: QuizItem[] = quizResults22.slice(40, 60);
-export const quiz22_4: QuizItem[] = quizResults22.slice(60, 80);
+// 40개씩 4개 세트로 나누기
+export const quiz22_1: QuizItem[] = quizResults22.slice(0, 40);
+export const quiz22_2: QuizItem[] = quizResults22.slice(40, 80);
+export const quiz22_3: QuizItem[] = quizResults22.slice(80, 120);
+export const quiz22_4: QuizItem[] = quizResults22.slice(120, 160);

@@ -30,6 +30,7 @@ export default function SpellingTypingGame({ items, onGoMain }: SpellingTypingGa
     const [activeBlockId, setActiveBlockId] = useState<number | null>(null);
     const [wordProgress, setWordProgress] = useState<{ [key: string]: string }>({});
     const [feedback, setFeedback] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+    const [usedWords, setUsedWords] = useState<Set<string>>(new Set());
     
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const animationRef = useRef<number | undefined>(undefined);
@@ -55,6 +56,7 @@ export default function SpellingTypingGame({ items, onGoMain }: SpellingTypingGa
         setActiveBlockId(null);
         setWordProgress({});
         setFeedback(null);
+        setUsedWords(new Set());
         blockIdRef.current = 0;
         lastBlockTimeRef.current = Date.now();
         gameLoop();
@@ -62,7 +64,16 @@ export default function SpellingTypingGame({ items, onGoMain }: SpellingTypingGa
 
     // 새로운 블록 생성
     const createBlock = useCallback(() => {
-        const randomItem = items[Math.floor(Math.random() * items.length)];
+        // 사용되지 않은 단어들만 필터링
+        const availableItems = items.filter(item => !usedWords.has(item.correctAnswer));
+        
+        // 모든 단어를 사용했으면 usedWords 초기화
+        if (availableItems.length === 0) {
+            setUsedWords(new Set());
+            return;
+        }
+        
+        const randomItem = availableItems[Math.floor(Math.random() * availableItems.length)];
         const newBlock: FallingBlock = {
             id: blockIdRef.current++,
             word: randomItem.correctAnswer,
@@ -77,7 +88,8 @@ export default function SpellingTypingGame({ items, onGoMain }: SpellingTypingGa
         
         setBlocks(prev => [...prev, newBlock]);
         setActiveBlockId(newBlock.id);
-    }, [items, level]);
+        setUsedWords(prev => new Set([...prev, randomItem.correctAnswer]));
+    }, [items, level, usedWords]);
 
     // 게임 루프
     const gameLoop = useCallback(() => {
