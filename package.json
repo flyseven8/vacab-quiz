@@ -12,6 +12,7 @@
     "preview": "vite preview --host --port 3000"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.107.0",
     "react": "^19.1.0",
     "react-confetti": "^6.4.0",
     "react-dom": "^19.1.0",

@@ -1,7 +1,7 @@
 import '../index.css'
 import { useState, useEffect } from 'react';
 import type { QuizItem } from '../data/quizData';
-import { saveQuizResult } from '../utils/localStorage';
+import { saveQuizResult } from '../services/quizResults';
 import Confetti from "react-confetti";
 
 const QuizResult: React.FC<{ items: QuizItem[], lesson: 1 | 2 | 3 | 4 | 'all', onGoMain: () => void }> = ({ items, lesson, onGoMain }) => {
@@ -37,7 +37,7 @@ const QuizResult: React.FC<{ items: QuizItem[], lesson: 1 | 2 | 3 | 4 | 'all', o
         return normalized;
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const updatedResults = quizResults.map((item) => {
             const userAnswer = answers[item.correctAnswer] || '';
             const isCorrect = normalizeAnswer(userAnswer) === normalizeAnswer(item.correctAnswer);
@@ -50,7 +50,7 @@ const QuizResult: React.FC<{ items: QuizItem[], lesson: 1 | 2 | 3 | 4 | 'all', o
         setQuizResults(updatedResults);
         setSubmitted(true);
 
-        // 시험 결과 localStorage 저장
+        // 시험 결과 저장
         const correctCount = updatedResults.filter(item => item.isCorrect).length;
         const wrongItems = updatedResults.filter(item => !item.isCorrect);
         const now = new Date();
@@ -62,7 +62,7 @@ const QuizResult: React.FC<{ items: QuizItem[], lesson: 1 | 2 | 3 | 4 | 'all', o
             wrongList: wrongItems.map(item => ({ korean: item.korean, correct: item.correctAnswer, user: item.userAnswer })),
             retry: submittedRetry
         };
-        saveQuizResult(result);
+        await saveQuizResult(result);
     };
 
     useEffect(() => {

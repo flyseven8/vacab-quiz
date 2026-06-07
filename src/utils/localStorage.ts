@@ -1,4 +1,5 @@
 export type QuizResultHistory = {
+    id?: number;
     date: string;
     lesson: string;
     correctCount: number;
@@ -49,7 +50,7 @@ export const cleanExpiredQuizResults = (): void => {
 /**
  * 퀴즈 결과를 로컬 스토리지에 저장합니다.
  */
-export const saveQuizResult = (result: Omit<QuizResultHistory, 'timestamp'>): void => {
+export const saveLocalQuizResult = (result: Omit<QuizResultHistory, 'timestamp'>): void => {
     try {
         const resultWithTimestamp: QuizResultHistory = {
             ...result,
@@ -78,6 +79,8 @@ export const getQuizResults = (): QuizResultHistory[] => {
         return [];
     }
 };
+
+export const getLocalQuizResults = getQuizResults;
 
 /**
  * 특정 인덱스의 퀴즈 결과를 삭제합니다.

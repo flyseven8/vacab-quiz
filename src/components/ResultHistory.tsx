@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { getQuizResults, deleteQuizResult, deleteAllQuizResults, type QuizResultHistory } from '../utils/localStorage';
+import type { QuizResultHistory } from '../utils/localStorage';
+import { deleteAllQuizResults, deleteQuizResult, getQuizResults } from '../services/quizResults';
 
 const ResultHistory: React.FC<{ onGoMain: () => void }> = ({ onGoMain }) => {
     const [history, setHistory] = useState<QuizResultHistory[]>([]);
 
     useEffect(() => {
-        const data = getQuizResults();
-        setHistory(data);
+        getQuizResults().then(setHistory);
     }, []);
 
-    const handleDelete = (idx: number) => {
-        deleteQuizResult(idx);
-        const updatedHistory = getQuizResults();
+    const handleDelete = async (idx: number) => {
+        await deleteQuizResult(idx, history[idx]?.id);
+        const updatedHistory = await getQuizResults();
         setHistory(updatedHistory);
     };
 
-    const handleDeleteAll = () => {
+    const handleDeleteAll = async () => {
         if (window.confirm('정말 모든 시험 결과를 삭제하시겠습니까?')) {
-            deleteAllQuizResults();
+            await deleteAllQuizResults();
             setHistory([]);
         }
     };
