@@ -42,7 +42,7 @@ export default function App() {
         <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-green-800 transition-colors relative">
             {selected === null && (
                 <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 text-3xl font-bold text-white">
-                    승급전
+                    19과
                 </div>
             )}
             <button
@@ -63,7 +63,7 @@ export default function App() {
                                      onClick={() => { setSelected(1); setShuffledItems(shuffleArray(quiz22_1)); }}
                                  >
                                      <span className="text-lg">1과</span>
-                                     <span className="text-xs opacity-80">(1~40)</span>
+                                     <span className="text-xs opacity-80">(1~20)</span>
                                  </button>
                                                                  <button
                                      className="w-full h-12 text-sm rounded-xl bg-white/15 backdrop-blur-sm text-white shadow-md hover:bg-white/25 transition-all duration-200 transform hover:scale-102 flex items-center justify-center font-medium border border-white/15"
@@ -78,7 +78,7 @@ export default function App() {
                                      onClick={() => { setSelected(2); setShuffledItems(shuffleArray(quiz22_2)); }}
                                  >
                                      <span className="text-lg">2과</span>
-                                     <span className="text-xs opacity-80">(41~80)</span>
+                                     <span className="text-xs opacity-80">(21~40)</span>
                                  </button>
                                                                  <button
                                      className="w-full h-12 text-sm rounded-xl bg-white/15 backdrop-blur-sm text-white shadow-md hover:bg-white/25 transition-all duration-200 transform hover:scale-102 flex items-center justify-center font-medium border border-white/15"
@@ -93,7 +93,7 @@ export default function App() {
                                      onClick={() => { setSelected(3); setShuffledItems(shuffleArray(quiz22_3)); }}
                                  >
                                      <span className="text-lg">3과</span>
-                                     <span className="text-xs opacity-80">(81~120)</span>
+                                     <span className="text-xs opacity-80">(41~60)</span>
                                  </button>
                                                                  <button
                                      className="w-full h-12 text-sm rounded-xl bg-white/15 backdrop-blur-sm text-white shadow-md hover:bg-white/25 transition-all duration-200 transform hover:scale-102 flex items-center justify-center font-medium border border-white/15"
@@ -108,7 +108,7 @@ export default function App() {
                                      onClick={() => { setSelected(4); setShuffledItems(shuffleArray(quiz22_4)); }}
                                  >
                                      <span className="text-lg">4과</span>
-                                     <span className="text-xs opacity-80">(121~160)</span>
+                                     <span className="text-xs opacity-80">(61~80)</span>
                                  </button>
                                                                  <button
                                      className="w-full h-12 text-sm rounded-xl bg-white/15 backdrop-blur-sm text-white shadow-md hover:bg-white/25 transition-all duration-200 transform hover:scale-102 flex items-center justify-center font-medium border border-white/15"
@@ -123,14 +123,14 @@ export default function App() {
                             onClick={() => { setSelected('all'); setShuffledItems(shuffleArray(quizResults22)); }}
                         >
                             <span>전체</span>
-                            <span className="text-sm opacity-80">(1~160)</span>
+                            <span className="text-sm opacity-80">(1~80)</span>
                         </button>
                         <button
                             className="px-6 py-5 text-lg rounded-2xl bg-white/20 backdrop-blur-sm text-white shadow-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-105 w-full flex flex-col items-center justify-center leading-tight font-semibold border border-white/20"
                             onClick={() => { setSelected('all'); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quizResults22)); }}
                         >
                             <span>타자 게임</span>
-                            <span className="text-sm opacity-80">(1~160)</span>
+                            <span className="text-sm opacity-80">(1~80)</span>
                         </button>
                     </div>
                     <div className="mt-6 flex justify-center">
