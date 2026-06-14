@@ -1,15 +1,17 @@
-import '../index.css'
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { ArrowLeft, Check, CheckCircle2, RotateCcw, Send, Speaker, X } from 'lucide-react';
+import Confetti from 'react-confetti';
 import type { QuizItem } from '../data/quizData';
 import { saveQuizResult } from '../services/quizResults';
-import Confetti from "react-confetti";
 
-const QuizResult: React.FC<{ items: QuizItem[], lesson: 1 | 2 | 3 | 4 | 'all', onGoMain: () => void }> = ({ items, lesson, onGoMain }) => {
-    const [answers, setAnswers] = useState<{ [key: string]: string }>({});
+type Lesson = 1 | 2 | 3 | 4 | 'all';
+
+const QuizResult: React.FC<{ items: QuizItem[]; lesson: Lesson; onGoMain: () => void }> = ({ items, lesson, onGoMain }) => {
+    const [answers, setAnswers] = useState<Record<string, string>>({});
     const [submitted, setSubmitted] = useState(false);
     const [submittedRetry, setSubmittedRetry] = useState(false);
-    const [saveError, setSaveError] = useState('');
     const [quizResults, setQuizResults] = useState<QuizItem[]>(items);
+    const [saveError, setSaveError] = useState('');
     const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
     useEffect(() => {
@@ -22,48 +24,31 @@ const QuizResult: React.FC<{ items: QuizItem[], lesson: 1 | 2 | 3 | 4 | 'all', o
 
     useEffect(() => {
         const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const handleAnswerChange = (correctAnswer: string, value: string) => {
-        setAnswers(prev => ({
-            ...prev,
-            [correctAnswer]: value
-        }));
-    };
-
-    const normalizeAnswer = (answer: string): string => {
-        const normalized = answer.toLowerCase().trim().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '');
-        console.log('정규화된 답변:', normalized);
-        return normalized;
-    };
+    const normalizeAnswer = (answer: string) => answer.toLowerCase().trim().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '');
 
     const handleSubmit = async () => {
         const updatedResults = quizResults.map((item) => {
             const userAnswer = answers[item.correctAnswer] || '';
-            const isCorrect = normalizeAnswer(userAnswer) === normalizeAnswer(item.correctAnswer);
-            return {
-                ...item,
-                userAnswer,
-                isCorrect
-            };
+            return { ...item, userAnswer, isCorrect: normalizeAnswer(userAnswer) === normalizeAnswer(item.correctAnswer) };
         });
         setQuizResults(updatedResults);
         setSubmitted(true);
 
-        // 시험 결과 저장
-        const correctCount = updatedResults.filter(item => item.isCorrect).length;
-        const wrongItems = updatedResults.filter(item => !item.isCorrect);
-        const now = new Date();
+        const correctCount = updatedResults.filter((item) => item.isCorrect).length;
+        const wrongItems = updatedResults.filter((item) => !item.isCorrect);
         const result = {
-            date: now.toLocaleString(),
+            date: new Date().toLocaleString(),
             lesson: lesson === 'all' ? '전체' : `${lesson}과`,
             correctCount,
             total: updatedResults.length,
-            wrongList: wrongItems.map(item => ({ korean: item.korean, correct: item.correctAnswer, user: item.userAnswer })),
-            retry: submittedRetry
+            wrongList: wrongItems.map((item) => ({ korean: item.korean, correct: item.correctAnswer, user: item.userAnswer })),
+            retry: submittedRetry,
         };
+
         try {
             setSaveError('');
             await saveQuizResult(result);
@@ -74,9 +59,7 @@ const QuizResult: React.FC<{ items: QuizItem[], lesson: 1 | 2 | 3 | 4 | 'all', o
     };
 
     useEffect(() => {
-        if (submitted) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        if (submitted) window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [submitted]);
 
     const handleReset = () => {
@@ -88,168 +71,114 @@ const QuizResult: React.FC<{ items: QuizItem[], lesson: 1 | 2 | 3 | 4 | 'all', o
     };
 
     const handleRetryWrong = () => {
-        const newQuizResults = quizResults.map(item => {
-            if (item.isCorrect) return item;
-            return { ...item, userAnswer: '', isCorrect: undefined };
-        });
-        setQuizResults(newQuizResults);
-        setAnswers(() => {
-            const newAnswers: { [key: string]: string } = {};
-            quizResults.forEach(item => {
-                if (item.isCorrect) {
-                    newAnswers[item.correctAnswer] = item.userAnswer;
-                }
-            });
-            return newAnswers;
-        });
+        setQuizResults((current) => current.map((item) => item.isCorrect ? item : { ...item, userAnswer: '', isCorrect: undefined }));
+        setAnswers(() => Object.fromEntries(quizResults.filter((item) => item.isCorrect).map((item) => [item.correctAnswer, item.userAnswer])));
         setSubmitted(false);
         setSubmittedRetry(true);
     };
 
-    const wrongCount = quizResults.length - quizResults.filter(item => item.isCorrect).length;
-    const passOrFail = wrongCount >= 9 ? "탈락" : "통과";
-
-    // 선택된 과 번호 추출
-    const lessonTitle = lesson === 'all' ? '전체 (1~80번)' : `${lesson}과 (${(lesson - 1) * 20 + 1}~${lesson * 20}번)`;
-
-    const allCorrect = submitted && wrongCount === 0;
-
-    // 미국식 발음 재생 함수
     const speakUS = (word: string) => {
-        const utter = new window.SpeechSynthesisUtterance(word);
-        utter.lang = 'en-US';
-        // 미국식 음성 우선 선택
-        const voices = window.speechSynthesis.getVoices();
-        const usVoice = voices.find(v => v.lang === 'en-US');
-        if (usVoice) utter.voice = usVoice;
-        window.speechSynthesis.speak(utter);
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        const usVoice = window.speechSynthesis.getVoices().find((voice) => voice.lang === 'en-US');
+        if (usVoice) utterance.voice = usVoice;
+        window.speechSynthesis.speak(utterance);
     };
 
+    const correctCount = quizResults.filter((item) => item.isCorrect).length;
+    const wrongCount = quizResults.length - correctCount;
+    const passed = wrongCount < 9;
+    const allCorrect = submitted && wrongCount === 0;
+    const lessonTitle = lesson === 'all' ? '전체 80개' : `${lesson}세트 · ${(lesson - 1) * 20 + 1}-${lesson * 20}번`;
+
     return (
-        <div className="p-4 w-full flex flex-col items-center dark:bg-gray-900 dark:text-white">
-            {allCorrect && (
-                <>
-                    <Confetti width={windowSize.width} height={windowSize.height} />
-                    <div className="fixed inset-0 flex flex-col items-center justify-center z-50">
-                        <h1 className="text-5xl font-bold text-blue-600 dark:text-blue-400 mb-8">100점! 축하합니다!</h1>
-                        <a
-                            href="#"
-                            onClick={e => { e.preventDefault(); onGoMain(); }}
-                            className="text-blue-500 dark:text-blue-400 underline text-2xl cursor-pointer"
-                        >
-                            처음으로
-                        </a>
-                    </div>
-                </>
-            )}
-            <div className="w-full flex flex-col items-center mb-6">
-                <div className="w-4/5 min-w-[20rem] flex items-center mb-2">
-                    <button
-                        onClick={onGoMain}
-                        className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors mr-4"
-                        aria-label="뒤로 가기"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
+        <main className="min-h-screen bg-[#f6f7f2] text-[#171717] dark:bg-[#171917] dark:text-[#f4f5ef]">
+            {allCorrect && <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={500} />}
+
+            <header className="sticky top-0 z-30 border-b border-black/10 bg-[#f6f7f2]/95 backdrop-blur dark:border-white/10 dark:bg-[#171917]/95">
+                <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+                    <button type="button" onClick={onGoMain} aria-label="처음으로" className="flex h-10 items-center gap-2 rounded-lg px-2 text-sm font-bold transition hover:bg-black/5 dark:hover:bg-white/10">
+                        <ArrowLeft size={19} /> <span className="hidden sm:inline">처음으로</span>
                     </button>
-                    <div className="text-lg font-semibold">{lessonTitle}</div>
+                    <div className="text-center">
+                        <p className="text-xs font-bold text-black/40 dark:text-white/40">19과 단어 시험</p>
+                        <p className="font-black">{lessonTitle}</p>
+                    </div>
+                    <div className="min-w-14 text-right text-sm font-bold">{quizResults.length}문제</div>
                 </div>
+            </header>
+
+            <div className="mx-auto max-w-5xl px-4 py-7 sm:px-6 sm:py-10">
                 {submitted && (
-                    <div className="text-lg">
-                        <p className={`mt-3 font-bold ${passOrFail === "탈락" ? "text-red-600 dark:text-red-400" : "text-blue-600 dark:text-blue-400"} text-3xl text-center`}>
-                            {passOrFail}
-                        </p>
-                        <p className="mt-2 text-blue-600 dark:text-blue-400 text-lg font-semibold text-center">
-                            총 {quizResults.length}문제 중 {wrongCount}문제 틀림
-                        </p>
-                        {saveError && (
-                            <p className="mt-3 text-center text-sm font-medium text-red-600 dark:text-red-400">
-                                {saveError}
-                            </p>
-                        )}
-                        <div className="flex justify-center mt-4 gap-4">
-                            <button
-                                onClick={handleReset}
-                                className="px-6 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
-                            >
-                                초기화
+                    <section className={`mb-7 grid gap-5 rounded-lg p-5 text-[#171717] sm:grid-cols-[1fr_auto] sm:items-center ${passed ? 'bg-[#b8ead6]' : 'bg-[#ffb7a8]'}`}>
+                        <div>
+                            <p className="text-xs font-black opacity-55">TEST RESULT</p>
+                            <div className="mt-1 flex items-baseline gap-3">
+                                <h1 className="text-4xl font-black">{passed ? '통과' : '재도전'}</h1>
+                                <span className="font-bold">{correctCount} / {quizResults.length} 정답</span>
+                            </div>
+                            {saveError && <p className="mt-3 text-sm font-bold text-[#8b1f17]">{saveError}</p>}
+                        </div>
+                        <div className="flex gap-2">
+                            <button type="button" onClick={handleReset} className="flex h-11 items-center gap-2 rounded-lg border border-black/20 bg-white/60 px-4 text-sm font-bold transition hover:bg-white">
+                                <RotateCcw size={17} /> 다시 풀기
                             </button>
                             {wrongCount > 0 && (
-                                <button
-                                    onClick={handleRetryWrong}
-                                    className="px-6 py-2 rounded-md text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
-                                >
-                                    틀린 문제 다시 풀기
+                                <button type="button" onClick={handleRetryWrong} className="flex h-11 items-center gap-2 rounded-lg bg-[#171717] px-4 text-sm font-bold text-white transition hover:-translate-y-0.5">
+                                    <CheckCircle2 size={17} /> 오답만
                                 </button>
                             )}
                         </div>
-                    </div>
+                    </section>
                 )}
-            </div>
-            {(quizResults).map((item, index) => (
-                <div
-                    key={index}
-                    className={`p-4 rounded-lg shadow mb-4 w-4/5 min-w-[20rem] ${
-                        item.isCorrect
-                            ? "bg-green-100 dark:bg-green-900"
-                            : submitted
-                                ? "bg-red-100 dark:bg-red-900"
-                                : "bg-white dark:bg-gray-800"
-                    }`}
-                >
-                    <div className="text-lg font-semibold">
-                        <span className="mr-2 text-gray-500 dark:text-gray-400">{index + 1}.</span>
-                        {item.isCorrect ? "✔️" : (submitted ? "❌" : "")} {item.korean}
-                        {submitted && (
-                            <button
-                                onClick={() => speakUS(item.correctAnswer)}
-                                className="ml-2 px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 text-sm"
-                                title="미국식 발음 듣기"
-                                type="button"
-                            >
-                                🔊
-                            </button>
-                        )}
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-300">
-                        {item.partOfSpeech} {item.meaning}
-                    </div>
-                    <div className="mt-2">
-                        <div>
-                            <span className="font-medium">Your answer:</span>{" "}
-                            <input
-                                type="text"
-                                value={answers[item.correctAnswer] || ''}
-                                onChange={(e) => handleAnswerChange(item.correctAnswer, e.target.value)}
-                                className="mt-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                placeholder="답을 입력하세요"
-                                disabled={item.isCorrect}
-                            />
-                        </div>
-                        {submitted && !item.isCorrect && (
-                            <div className="mt-2">
-                                <span className="font-medium">Correct answer:</span>{" "}
-                                {item.correctAnswer}
-                            </div>
-                        )}
-                    </div>
+
+                <section className="overflow-hidden rounded-lg border border-black/15 bg-white dark:border-white/15 dark:bg-[#242724]">
+                    {quizResults.map((item, index) => {
+                        const isWrong = submitted && !item.isCorrect;
+                        return (
+                            <article key={`${item.correctAnswer}-${index}`} className={`grid gap-4 border-b border-black/10 p-5 last:border-0 dark:border-white/10 sm:grid-cols-[52px_1fr_280px] sm:items-center ${item.isCorrect ? 'bg-[#ecfaf4] dark:bg-[#1e352c]' : isWrong ? 'bg-[#fff1ed] dark:bg-[#40231f]' : ''}`}>
+                                <div className={`grid h-10 w-10 place-items-center rounded-lg text-sm font-black ${item.isCorrect ? 'bg-[#b8ead6] text-[#173d31]' : isWrong ? 'bg-[#ffb7a8] text-[#5d2018]' : 'bg-[#eef0e9] text-black/45 dark:bg-white/10 dark:text-white/45'}`}>
+                                    {item.isCorrect ? <Check size={18} /> : isWrong ? <X size={18} /> : index + 1}
+                                </div>
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-2">
+                                        <h2 className="text-lg font-black">{item.korean}</h2>
+                                        {submitted && (
+                                            <button type="button" onClick={() => speakUS(item.correctAnswer)} className="grid h-8 w-8 place-items-center rounded-lg text-black/45 transition hover:bg-black/5 hover:text-black dark:text-white/45 dark:hover:bg-white/10 dark:hover:text-white" title="발음 듣기">
+                                                <Speaker size={16} />
+                                            </button>
+                                        )}
+                                    </div>
+                                    <p className="mt-1 text-sm leading-6 text-black/50 dark:text-white/50"><span className="font-bold">{item.partOfSpeech}</span> {item.meaning}</p>
+                                </div>
+                                <div>
+                                    <input
+                                        type="text"
+                                        value={answers[item.correctAnswer] || ''}
+                                        onChange={(event) => setAnswers((current) => ({ ...current, [item.correctAnswer]: event.target.value }))}
+                                        disabled={item.isCorrect}
+                                        placeholder="영어 단어 입력"
+                                        className={`h-12 w-full rounded-lg border bg-[#f8f9f5] px-4 font-bold text-[#171717] outline-none transition placeholder:font-medium placeholder:text-black/30 disabled:cursor-not-allowed dark:bg-[#171917] dark:text-white dark:placeholder:text-white/25 ${isWrong ? 'border-[#dc6d5d]' : 'border-black/15 focus:border-black dark:border-white/15 dark:focus:border-white'}`}
+                                    />
+                                    {isWrong && <p className="mt-2 text-sm font-bold text-[#b74637] dark:text-[#ff9f91]">정답: {item.correctAnswer}</p>}
+                                </div>
+                            </article>
+                        );
+                    })}
+                </section>
+
+                <div className="sticky bottom-4 mt-6 flex justify-end">
+                    <button
+                        type="button"
+                        onClick={handleSubmit}
+                        disabled={submitted}
+                        className="flex h-14 min-w-40 items-center justify-center gap-2 rounded-lg bg-[#171717] px-6 font-black text-white shadow-[0_4px_0_#b8ead6] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-[#f4f5ef] dark:text-[#171717]"
+                    >
+                        <Send size={19} /> {submitted ? '제출 완료' : '답안 제출'}
+                    </button>
                 </div>
-            ))}
-            <div className="flex justify-center gap-4 mt-6 w-4/5 min-w-[18rem]">
-                <button
-                    onClick={handleSubmit}
-                    disabled={submitted}
-                    className={`px-6 py-2 rounded-md text-white transition-colors ${
-                        submitted 
-                            ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed' 
-                            : 'bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900'
-                    }`}
-                >
-                    {submitted ? '제출 완료' : '제출하기'}
-                </button>
             </div>
-        </div>
+        </main>
     );
 };
 

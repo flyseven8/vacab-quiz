@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { ArrowLeft, Gamepad2, Heart, Keyboard, Play, RotateCcw, Trophy, Zap } from 'lucide-react';
 import type { QuizItem } from '../data/quizData';
 
 interface SpellingTypingGameProps {
@@ -59,7 +60,6 @@ export default function SpellingTypingGame({ items, onGoMain }: SpellingTypingGa
         setUsedWords(new Set());
         blockIdRef.current = 0;
         lastBlockTimeRef.current = Date.now();
-        gameLoop();
     };
 
     // 새로운 블록 생성
@@ -210,23 +210,25 @@ export default function SpellingTypingGame({ items, onGoMain }: SpellingTypingGa
             const timeProgress = timeElapsed / block.timeLimit;
             
             // 블록 그리기
-            ctx.fillStyle = `hsl(${200 - timeProgress * 100}, 70%, 50%)`;
-            ctx.fillRect(block.x, block.y, BLOCK_WIDTH, BLOCK_HEIGHT);
+            ctx.fillStyle = timeProgress > 0.75 ? '#ff8f7d' : '#7bd3b2';
+            ctx.beginPath();
+            ctx.roundRect(block.x, block.y, BLOCK_WIDTH, BLOCK_HEIGHT, 8);
+            ctx.fill();
             
             // 테두리
-            ctx.strokeStyle = '#333';
+            ctx.strokeStyle = '#171717';
             ctx.lineWidth = 2;
-            ctx.strokeRect(block.x, block.y, BLOCK_WIDTH, BLOCK_HEIGHT);
+            ctx.stroke();
             
             // 힌트 텍스트
-            ctx.fillStyle = '#fff';
-            ctx.font = '12px Arial';
+            ctx.fillStyle = '#171717';
+            ctx.font = 'bold 13px Inter, Arial';
             ctx.textAlign = 'center';
             ctx.fillText(block.hint, block.x + BLOCK_WIDTH / 2, block.y + BLOCK_HEIGHT / 2 + 4);
             
             // 시간바
             const barWidth = BLOCK_WIDTH * (1 - timeProgress);
-            ctx.fillStyle = timeProgress > 0.8 ? '#ff4444' : '#44ff44';
+            ctx.fillStyle = timeProgress > 0.8 ? '#e65e4c' : '#f8df74';
             ctx.fillRect(block.x, block.y - 5, barWidth, 3);
         });
 
@@ -239,13 +241,13 @@ export default function SpellingTypingGame({ items, onGoMain }: SpellingTypingGa
                     ? progress.length 
                     : 0;
                 
-                ctx.fillStyle = '#333';
-                ctx.font = '16px Arial';
+                ctx.fillStyle = '#f4f5ef';
+                ctx.font = 'bold 16px Inter, Arial';
                 ctx.textAlign = 'left';
                 ctx.fillText(progress || '', 10, GAME_HEIGHT - 60);
                 
                 // 정답 미리보기 (맞춘 부분만)
-                ctx.fillStyle = '#666';
+                ctx.fillStyle = '#8f978c';
                 ctx.fillText(activeBlock.word.substring(0, correctLength), 10, GAME_HEIGHT - 40);
             }
         }
@@ -267,7 +269,7 @@ export default function SpellingTypingGame({ items, onGoMain }: SpellingTypingGa
                 cancelAnimationFrame(animationRef.current);
             }
         };
-    }, [gameStarted, gameOver]);
+    }, [gameStarted, gameOver, gameLoop]);
 
     // 피드백 자동 제거
     useEffect(() => {
@@ -279,132 +281,92 @@ export default function SpellingTypingGame({ items, onGoMain }: SpellingTypingGa
 
     if (!gameStarted) {
         return (
-            <div className="max-w-4xl mx-auto p-6">
-                <div className="text-center mb-8">
-                    <h2 className="text-3xl font-bold mb-4 dark:text-white">스펠링 타자 게임</h2>
-                    <p className="text-lg mb-6 dark:text-white">
-                        떨어지는 블록의 단어를 빠르고 정확하게 입력하세요!
-                    </p>
-                    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6">
-                        <h3 className="text-xl font-semibold mb-4 dark:text-white">게임 규칙</h3>
-                        <ul className="text-left space-y-2 dark:text-white">
-                            <li>• 블록이 바닥에 닿기 전에 단어를 입력하세요</li>
-                            <li>• 정확한 철자를 입력하면 점수를 얻습니다</li>
-                            <li>• 연속 정답 시 콤보 점수가 올라갑니다</li>
-                            <li>• 시간이 부족하거나 틀리면 생명이 줄어듭니다</li>
-                            <li>• 레벨이 올라갈수록 난이도가 증가합니다</li>
-                        </ul>
+            <main className="min-h-screen bg-[#f6f7f2] text-[#171717] dark:bg-[#171917] dark:text-[#f4f5ef]">
+                <header className="border-b border-black/10 dark:border-white/10">
+                    <div className="mx-auto max-w-5xl px-5 py-4 sm:px-8">
+                        <button type="button" onClick={onGoMain} className="flex h-10 items-center gap-2 rounded-lg px-2 text-sm font-bold transition hover:bg-black/5 dark:hover:bg-white/10"><ArrowLeft size={19} /> 처음으로</button>
                     </div>
-                    <button
-                        onClick={startGame}
-                        className="px-8 py-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-xl font-semibold"
-                    >
-                        게임 시작
-                    </button>
+                </header>
+                <div className="mx-auto grid max-w-5xl gap-8 px-5 py-10 sm:px-8 sm:py-16 lg:grid-cols-[1fr_360px] lg:items-center">
+                    <section>
+                        <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-[#b8ead6] px-3 py-1.5 text-xs font-black text-[#173d31]"><Gamepad2 size={14} /> SPEED MODE</div>
+                        <h1 className="text-5xl font-black leading-[1.05] sm:text-6xl">보고, 입력하고,<br />점수를 쌓으세요</h1>
+                        <p className="mt-5 max-w-xl leading-7 text-black/50 dark:text-white/50">한국어 힌트를 보고 영어 단어를 완성하세요. 연속 정답일수록 더 높은 점수를 얻습니다.</p>
+                        <button type="button" onClick={startGame} className="mt-8 flex h-14 items-center gap-3 rounded-lg bg-[#171717] px-6 font-black text-white shadow-[0_4px_0_#b8ead6] transition hover:-translate-y-1 dark:bg-[#f4f5ef] dark:text-[#171717]"><Play size={20} fill="currentColor" /> 게임 시작</button>
+                    </section>
+                    <section className="rounded-lg border border-black/15 bg-white p-5 dark:border-white/15 dark:bg-[#242724]">
+                        <p className="text-xs font-black text-black/40 dark:text-white/40">HOW TO PLAY</p>
+                        <div className="mt-4 space-y-3">
+                            {[
+                                [Keyboard, '블록의 한국어 힌트를 보고 영단어 입력'],
+                                [Zap, '연속 정답으로 콤보 배수 획득'],
+                                [Heart, '세 번 놓치면 게임 종료'],
+                                [Trophy, '1,000점마다 난이도 상승'],
+                            ].map(([Icon, text], index) => {
+                                const RuleIcon = Icon as typeof Keyboard;
+                                return <div key={index} className="flex items-center gap-3 rounded-lg bg-[#f6f7f2] p-3 dark:bg-[#171917]"><RuleIcon size={19} /><span className="text-sm font-bold">{text as string}</span></div>;
+                            })}
+                        </div>
+                    </section>
                 </div>
-            </div>
+            </main>
         );
     }
 
     if (gameOver) {
         return (
-            <div className="max-w-4xl mx-auto p-6">
-                <div className="text-center mb-8">
-                    <h2 className="text-3xl font-bold mb-4 dark:text-white">게임 오버</h2>
-                    <div className="text-2xl mb-4 dark:text-white">
-                        최종 점수: <span className="text-blue-600 dark:text-blue-400">{score}</span>
+            <main className="grid min-h-screen place-items-center bg-[#f6f7f2] px-5 text-[#171717] dark:bg-[#171917] dark:text-[#f4f5ef]">
+                <div className="w-full max-w-xl rounded-lg border border-black/15 bg-white p-6 text-center dark:border-white/15 dark:bg-[#242724] sm:p-9">
+                    <div className="mx-auto grid h-16 w-16 place-items-center rounded-lg bg-[#f8df74] text-[#5f4b00]"><Trophy size={30} /></div>
+                    <p className="mt-5 text-xs font-black text-black/40 dark:text-white/40">GAME COMPLETE</p>
+                    <h1 className="mt-2 text-4xl font-black">{score.toLocaleString()}점</h1>
+                    <div className="mt-6 grid grid-cols-2 gap-3">
+                        <div className="rounded-lg bg-[#b8ead6] p-4 text-[#173d31]"><p className="text-xs font-black opacity-60">COMBO</p><p className="mt-1 text-2xl font-black">{combo}</p></div>
+                        <div className="rounded-lg bg-[#b9d9ff] p-4 text-[#17324f]"><p className="text-xs font-black opacity-60">LEVEL</p><p className="mt-1 text-2xl font-black">{level}</p></div>
                     </div>
-                    <div className="text-lg mb-6 dark:text-white">
-                        최고 콤보: <span className="text-green-600 dark:text-green-400">{combo}</span>
-                    </div>
-                    <div className="text-lg mb-8 dark:text-white">
-                        달성 레벨: <span className="text-purple-600 dark:text-purple-400">{level}</span>
+                    <div className="mt-6 flex gap-2">
+                        <button type="button" onClick={startGame} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-lg bg-[#171717] font-black text-white dark:bg-[#f4f5ef] dark:text-[#171717]"><RotateCcw size={18} /> 다시하기</button>
+                        <button type="button" onClick={onGoMain} className="h-12 flex-1 rounded-lg border border-black/15 font-black dark:border-white/15">처음으로</button>
                     </div>
                 </div>
-                <div className="flex justify-center gap-4">
-                    <button
-                        onClick={startGame}
-                        className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                    >
-                        다시하기
-                    </button>
-                    <button
-                        onClick={onGoMain}
-                        className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
-                    >
-                        메인으로
-                    </button>
-                </div>
-            </div>
+            </main>
         );
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-6">
-            {/* 게임 정보 */}
-            <div className="flex justify-between items-center mb-4 dark:text-white">
-                <div className="flex gap-6">
-                    <div>점수: <span className="text-blue-600 dark:text-blue-400">{score}</span></div>
-                    <div>콤보: <span className="text-green-600 dark:text-green-400">{combo}</span></div>
-                    <div>레벨: <span className="text-purple-600 dark:text-purple-400">{level}</span></div>
+        <main className="min-h-screen bg-[#171917] px-3 py-4 text-[#f4f5ef] sm:px-6 sm:py-6">
+            <div className="mx-auto max-w-5xl">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                    <button type="button" onClick={onGoMain} className="flex h-10 items-center gap-2 rounded-lg px-2 text-sm font-bold transition hover:bg-white/10"><ArrowLeft size={19} /> 종료</button>
+                    <div className="flex gap-2">
+                        {[['점수', score], ['콤보', combo], ['레벨', level]].map(([label, value]) => <div key={label} className="min-w-20 rounded-lg bg-white/10 px-3 py-2 text-center"><p className="text-[10px] font-black text-white/45">{label}</p><p className="font-black">{value}</p></div>)}
+                    </div>
+                    <div className="flex gap-1.5" aria-label={`남은 생명 ${lives}`}>
+                        {[...Array(3)].map((_, i) => <Heart key={i} size={20} fill={i < lives ? '#ff8f7d' : 'transparent'} className={i < lives ? 'text-[#ff8f7d]' : 'text-white/20'} />)}
+                    </div>
                 </div>
-                <div className="flex gap-4">
-                    {[...Array(3)].map((_, i) => (
-                        <div
-                            key={i}
-                            className={`w-6 h-6 rounded-full ${
-                                i < lives ? 'bg-red-500' : 'bg-gray-300 dark:bg-gray-600'
-                            }`}
-                        />
-                    ))}
-                </div>
-            </div>
-
-            {/* 피드백 메시지 */}
-            {feedback && (
-                <div className={`text-center p-3 rounded-lg mb-4 ${
-                    feedback.type === 'success' 
-                        ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                        : feedback.type === 'error'
-                        ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
-                        : 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
-                }`}>
-                    {feedback.message}
-                </div>
-            )}
-
-            {/* 게임 캔버스 */}
-            <div className="flex justify-center mb-6">
+                {feedback && <div className={`mb-3 rounded-lg px-4 py-3 text-center text-sm font-black ${feedback.type === 'success' ? 'bg-[#b8ead6] text-[#173d31]' : feedback.type === 'error' ? 'bg-[#ffb7a8] text-[#65271f]' : 'bg-[#b9d9ff] text-[#17324f]'}`}>{feedback.message}</div>}
+                <div className="overflow-hidden rounded-lg border border-white/15 bg-[#202320]">
                 <canvas
                     ref={canvasRef}
                     width={GAME_WIDTH}
                     height={GAME_HEIGHT}
-                    className="border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800"
+                    className="block aspect-[4/3] h-auto w-full bg-[#202320]"
                 />
-            </div>
-
-            {/* 입력창 */}
-            <div className="flex justify-center mb-6">
+                </div>
+                <div className="mx-auto mt-4 max-w-xl">
                 <input
                     type="text"
                     value={currentInput}
                     onChange={handleInput}
                     onKeyDown={handleKeyDown}
-                    placeholder="단어를 입력하세요..."
-                    className="w-96 p-3 border border-gray-300 dark:border-gray-600 rounded-lg text-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="영어 단어를 입력하세요"
+                    className="h-14 w-full rounded-lg border border-white/15 bg-white/10 px-5 text-center text-lg font-black text-white outline-none transition placeholder:text-white/30 focus:border-[#b8ead6]"
                     autoFocus
                 />
+                <p className="mt-2 text-center text-xs font-bold text-white/35">정확한 단어가 완성되면 자동으로 제출됩니다</p>
+                </div>
             </div>
-
-            {/* 게임 컨트롤 */}
-            <div className="text-center">
-                <button
-                    onClick={onGoMain}
-                    className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
-                >
-                    메인으로 돌아가기
-                </button>
-            </div>
-        </div>
+        </main>
     );
 }

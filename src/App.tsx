@@ -1,45 +1,62 @@
-import { useState, useEffect, useMemo } from "react";
-import './index.css'
-import QuizResult from "./components/QuizResult";
-import SpellingTypingGame from "./components/SpellingTypingGame";
-import type { QuizItem } from "./data/quizData";
-import ResultHistory from "./components/ResultHistory";
-import { FALLBACK_QUIZ_ITEMS, fetchQuizItems, splitQuizItems } from "./services/quizWords";
-// import selectGif from './assets/cat.gif';
+import { useEffect, useMemo, useState } from 'react';
+import { ArrowRight, BookOpen, History, Keyboard, Moon, Sparkles, Sun } from 'lucide-react';
+import './index.css';
+import QuizResult from './components/QuizResult';
+import SpellingTypingGame from './components/SpellingTypingGame';
+import type { QuizItem } from './data/quizData';
+import ResultHistory from './components/ResultHistory';
+import { FALLBACK_QUIZ_ITEMS, fetchQuizItems, splitQuizItems } from './services/quizWords';
+
+type Lesson = 1 | 2 | 3 | 4;
+type Selection = Lesson | 'all' | 'result' | null;
+
+const lessonMeta = [
+    { id: 1 as Lesson, range: '1-20', accent: 'bg-[#b8ead6]', label: '교통과 동물' },
+    { id: 2 as Lesson, range: '21-40', accent: 'bg-[#f8df74]', label: '장소와 움직임' },
+    { id: 3 as Lesson, range: '41-60', accent: 'bg-[#ffb7a8]', label: '사물과 모험' },
+    { id: 4 as Lesson, range: '61-80', accent: 'bg-[#b9d9ff]', label: '상태와 활동' },
+];
 
 export default function App() {
-    const [selected, setSelected] = useState<1 | 2 | 3 | 4 | 'all' | 'result' | null>(null);
+    const [selected, setSelected] = useState<Selection>(null);
     const [gameMode, setGameMode] = useState<'quiz' | 'spelling-typing' | null>(null);
     const [quizItems, setQuizItems] = useState<QuizItem[]>(FALLBACK_QUIZ_ITEMS);
     const [isLoadingWords, setIsLoadingWords] = useState(true);
     const [wordLoadNotice, setWordLoadNotice] = useState('');
     const [shuffledItems, setShuffledItems] = useState<QuizItem[]>([]);
-    const [isDarkMode, setIsDarkMode] = useState(() => {
-        const savedMode = localStorage.getItem('isDarkMode');
-        return savedMode === 'true' ? true : false;
-    });
+    const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('isDarkMode') === 'true');
 
     const quizSets = useMemo(() => splitQuizItems(quizItems), [quizItems]);
+    const setsByLesson: Record<Lesson, QuizItem[]> = {
+        1: quizSets.first,
+        2: quizSets.second,
+        3: quizSets.third,
+        4: quizSets.fourth,
+    };
 
-    function shuffleArray(array: QuizItem[]): QuizItem[] {
-        return array
-            .map((value) => ({ value, sort: Math.random() }))
-            .sort((a, b) => a.sort - b.sort)
-            .map(({ value }) => value);
-    }
+    const shuffleArray = (array: QuizItem[]) => [...array].sort(() => Math.random() - 0.5);
+
+    const startQuiz = (lesson: Lesson | 'all', mode: 'quiz' | 'spelling-typing') => {
+        const items = lesson === 'all' ? quizItems : setsByLesson[lesson];
+        window.scrollTo({ top: 0 });
+        setSelected(lesson);
+        setGameMode(mode === 'quiz' ? null : mode);
+        setShuffledItems(shuffleArray(items));
+    };
+
+    const goMain = () => {
+        window.scrollTo({ top: 0 });
+        setSelected(null);
+        setGameMode(null);
+    };
 
     useEffect(() => {
-        if (isDarkMode) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+        document.documentElement.classList.toggle('dark', isDarkMode);
         localStorage.setItem('isDarkMode', String(isDarkMode));
     }, [isDarkMode]);
 
     useEffect(() => {
         let isMounted = true;
-
         fetchQuizItems()
             .then((items) => {
                 if (!isMounted) return;
@@ -50,150 +67,139 @@ export default function App() {
                 if (!isMounted) return;
                 console.error('Supabase 단어 로드 실패:', error);
                 setQuizItems(FALLBACK_QUIZ_ITEMS);
-                setWordLoadNotice('단어를 불러오지 못해 내장 단어로 실행 중입니다.');
+                setWordLoadNotice('네트워크 연결을 확인해 주세요. 내장 단어로 학습을 계속할 수 있습니다.');
             })
             .finally(() => {
-                if (!isMounted) return;
-                setIsLoadingWords(false);
+                if (isMounted) setIsLoadingWords(false);
             });
-
-        return () => {
-            isMounted = false;
-        };
+        return () => { isMounted = false; };
     }, []);
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-green-800 transition-colors relative">
-            {selected === null && (
-                <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 text-3xl font-bold text-white">
-                    19과
-                </div>
-            )}
-            <button
-                className="fixed top-4 right-4 p-3 rounded-full bg-white/20 backdrop-blur-sm text-white z-50 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110"
-                onClick={() => setIsDarkMode(!isDarkMode)}
-            >
-                {isDarkMode ? '🌞' : '🌙'}
-            </button>
+    if (selected === 'result') {
+        return <ResultHistory onGoMain={goMain} />;
+    }
 
-            {selected === null ? (
-                // 선택 화면
-                <div className="flex flex-col min-h-screen pt-20 px-4">
-                    {wordLoadNotice && (
-                        <div className="mb-4 mx-auto max-w-4xl w-full rounded-lg bg-yellow-100 px-4 py-3 text-sm text-yellow-900 shadow">
-                            {wordLoadNotice}
+    if (selected !== null) {
+        return gameMode === 'spelling-typing'
+            ? <SpellingTypingGame items={shuffledItems} onGoMain={goMain} />
+            : <QuizResult items={shuffledItems} lesson={selected} onGoMain={goMain} />;
+    }
+
+    return (
+        <main className="min-h-screen bg-[#f6f7f2] text-[#171717] dark:bg-[#171917] dark:text-[#f4f5ef]">
+            <header className="border-b border-black/10 dark:border-white/10">
+                <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
+                    <div className="flex items-center gap-3">
+                        <div className="grid h-10 w-10 place-items-center rounded-lg bg-[#171717] text-white dark:bg-[#f4f5ef] dark:text-[#171717]">
+                            <BookOpen size={21} strokeWidth={2.2} />
                         </div>
-                    )}
-                    <div className="flex flex-col gap-4 max-w-4xl mx-auto w-full">
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="flex flex-col gap-2">
-                                                                 <button
-                                     className="w-full h-24 rounded-2xl bg-white/20 backdrop-blur-sm text-white shadow-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-105 flex flex-col items-center justify-center leading-tight font-semibold border border-white/20"
-                                     disabled={isLoadingWords}
-                                     onClick={() => { setSelected(1); setGameMode(null); setShuffledItems(shuffleArray(quizSets.first)); }}
-                                 >
-                                     <span className="text-lg">1과</span>
-                                     <span className="text-xs opacity-80">(1~20)</span>
-                                 </button>
-                                                                 <button
-                                     className="w-full h-12 text-sm rounded-xl bg-white/15 backdrop-blur-sm text-white shadow-md hover:bg-white/25 transition-all duration-200 transform hover:scale-102 flex items-center justify-center font-medium border border-white/15"
-                                     disabled={isLoadingWords}
-                                     onClick={() => { setSelected(1); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quizSets.first)); }}
-                                 >
-                                     타자 게임
-                                 </button>
+                        <div>
+                            <p className="text-xs font-bold uppercase text-black/45 dark:text-white/45">Vocabulary Lab</p>
+                            <p className="font-bold">19과 단어 퀴즈</p>
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => setIsDarkMode((value) => !value)}
+                        className="grid h-10 w-10 place-items-center rounded-lg border border-black/15 bg-white transition hover:-translate-y-0.5 hover:border-black dark:border-white/15 dark:bg-[#242724]"
+                        title={isDarkMode ? '라이트 모드' : '다크 모드'}
+                        aria-label={isDarkMode ? '라이트 모드' : '다크 모드'}
+                    >
+                        {isDarkMode ? <Sun size={19} /> : <Moon size={19} />}
+                    </button>
+                </div>
+            </header>
+
+            <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14">
+                <section className="mb-10 grid gap-7 lg:grid-cols-[1fr_320px] lg:items-end">
+                    <div>
+                        <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-[#b8ead6] px-3 py-1.5 text-xs font-bold text-[#173d31]">
+                            <Sparkles size={14} /> 80 WORDS READY
+                        </div>
+                        <h1 className="max-w-3xl text-4xl font-black leading-[1.08] sm:text-6xl">
+                            오늘의 단어를<br />내 것으로 만드는 시간
+                        </h1>
+                        <p className="mt-5 max-w-xl text-base leading-7 text-black/55 dark:text-white/55">
+                            20개씩 나눠 집중하거나, 전체 80개를 한 번에 도전하세요.
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => setSelected('result')}
+                        className="flex min-h-24 items-center justify-between rounded-lg border border-black/15 bg-white p-5 text-left shadow-[0_4px_0_#171717] transition hover:-translate-y-1 dark:border-white/15 dark:bg-[#242724] dark:shadow-[0_4px_0_#f4f5ef]"
+                    >
+                        <span>
+                            <span className="mb-1 block text-xs font-bold text-black/40 dark:text-white/40">MY RECORD</span>
+                            <span className="text-lg font-bold">학습 결과 보기</span>
+                        </span>
+                        <History size={24} />
+                    </button>
+                </section>
+
+                {wordLoadNotice && (
+                    <div className="mb-6 rounded-lg border border-[#d6aa16] bg-[#fff2bd] px-4 py-3 text-sm font-medium text-[#5f4b00]">
+                        {wordLoadNotice}
+                    </div>
+                )}
+
+                <section className="overflow-hidden rounded-lg border border-black/15 bg-white dark:border-white/15 dark:bg-[#242724]">
+                    <div className="grid grid-cols-[64px_1fr_auto] items-center border-b border-black/10 px-4 py-3 text-xs font-bold text-black/40 dark:border-white/10 dark:text-white/40 sm:grid-cols-[90px_1fr_270px] sm:px-6">
+                        <span>SET</span><span>RANGE</span><span className="hidden sm:block">MODE</span>
+                    </div>
+                    {lessonMeta.map((lesson) => (
+                        <div key={lesson.id} className="grid grid-cols-[64px_1fr] gap-3 border-b border-black/10 px-4 py-5 last:border-0 dark:border-white/10 sm:grid-cols-[90px_1fr_270px] sm:items-center sm:px-6">
+                            <div className={`grid h-11 w-11 place-items-center rounded-lg text-lg font-black ${lesson.accent} text-[#171717]`}>
+                                {lesson.id}
                             </div>
-                            <div className="flex flex-col gap-2">
-                                                                 <button
-                                     className="w-full h-24 rounded-2xl bg-white/20 backdrop-blur-sm text-white shadow-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-105 flex flex-col items-center justify-center leading-tight font-semibold border border-white/20"
-                                     disabled={isLoadingWords}
-                                     onClick={() => { setSelected(2); setGameMode(null); setShuffledItems(shuffleArray(quizSets.second)); }}
-                                 >
-                                     <span className="text-lg">2과</span>
-                                     <span className="text-xs opacity-80">(21~40)</span>
-                                 </button>
-                                                                 <button
-                                     className="w-full h-12 text-sm rounded-xl bg-white/15 backdrop-blur-sm text-white shadow-md hover:bg-white/25 transition-all duration-200 transform hover:scale-102 flex items-center justify-center font-medium border border-white/15"
-                                     disabled={isLoadingWords}
-                                     onClick={() => { setSelected(2); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quizSets.second)); }}
-                                 >
-                                     타자 게임
-                                 </button>
+                            <div>
+                                <p className="font-bold">{lesson.label}</p>
+                                <p className="mt-1 text-sm text-black/45 dark:text-white/45">{lesson.range}번 · 20개 단어</p>
                             </div>
-                            <div className="flex flex-col gap-2">
-                                                                 <button
-                                     className="w-full h-24 rounded-2xl bg-white/20 backdrop-blur-sm text-white shadow-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-105 flex flex-col items-center justify-center leading-tight font-semibold border border-white/20"
-                                     disabled={isLoadingWords}
-                                     onClick={() => { setSelected(3); setGameMode(null); setShuffledItems(shuffleArray(quizSets.third)); }}
-                                 >
-                                     <span className="text-lg">3과</span>
-                                     <span className="text-xs opacity-80">(41~60)</span>
-                                 </button>
-                                                                 <button
-                                     className="w-full h-12 text-sm rounded-xl bg-white/15 backdrop-blur-sm text-white shadow-md hover:bg-white/25 transition-all duration-200 transform hover:scale-102 flex items-center justify-center font-medium border border-white/15"
-                                     disabled={isLoadingWords}
-                                     onClick={() => { setSelected(3); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quizSets.third)); }}
-                                 >
-                                     타자 게임
-                                 </button>
-                            </div>
-                            <div className="flex flex-col gap-2">
-                                                                 <button
-                                     className="w-full h-24 rounded-2xl bg-white/20 backdrop-blur-sm text-white shadow-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-105 flex flex-col items-center justify-center leading-tight font-semibold border border-white/20"
-                                     disabled={isLoadingWords}
-                                     onClick={() => { setSelected(4); setGameMode(null); setShuffledItems(shuffleArray(quizSets.fourth)); }}
-                                 >
-                                     <span className="text-lg">4과</span>
-                                     <span className="text-xs opacity-80">(61~80)</span>
-                                 </button>
-                                                                 <button
-                                     className="w-full h-12 text-sm rounded-xl bg-white/15 backdrop-blur-sm text-white shadow-md hover:bg-white/25 transition-all duration-200 transform hover:scale-102 flex items-center justify-center font-medium border border-white/15"
-                                     disabled={isLoadingWords}
-                                     onClick={() => { setSelected(4); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quizSets.fourth)); }}
-                                 >
-                                     타자 게임
-                                 </button>
+                            <div className="col-span-2 flex gap-2 sm:col-span-1">
+                                <button
+                                    type="button"
+                                    disabled={isLoadingWords}
+                                    onClick={() => startQuiz(lesson.id, 'quiz')}
+                                    className="flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-[#171717] px-4 text-sm font-bold text-white transition hover:-translate-y-0.5 disabled:opacity-40 dark:bg-[#f4f5ef] dark:text-[#171717]"
+                                >
+                                    퀴즈 <ArrowRight size={16} />
+                                </button>
+                                <button
+                                    type="button"
+                                    disabled={isLoadingWords}
+                                    onClick={() => startQuiz(lesson.id, 'spelling-typing')}
+                                    className="grid h-11 w-11 place-items-center rounded-lg border border-black/15 bg-[#f6f7f2] transition hover:-translate-y-0.5 hover:border-black disabled:opacity-40 dark:border-white/15 dark:bg-[#171917] dark:hover:border-white"
+                                    title="타자 게임"
+                                    aria-label={`${lesson.id}세트 타자 게임`}
+                                >
+                                    <Keyboard size={19} />
+                                </button>
                             </div>
                         </div>
-                        <button
-                            className="px-6 py-5 text-lg rounded-2xl bg-white/20 backdrop-blur-sm text-white shadow-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-105 w-full flex flex-col items-center justify-center leading-tight font-semibold border border-white/20"
-                            disabled={isLoadingWords}
-                            onClick={() => { setSelected('all'); setGameMode(null); setShuffledItems(shuffleArray(quizItems)); }}
-                        >
-                            <span>전체</span>
-                            <span className="text-sm opacity-80">{isLoadingWords ? '불러오는 중' : '(1~80)'}</span>
-                        </button>
-                        <button
-                            className="px-6 py-5 text-lg rounded-2xl bg-white/20 backdrop-blur-sm text-white shadow-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-105 w-full flex flex-col items-center justify-center leading-tight font-semibold border border-white/20"
-                            disabled={isLoadingWords}
-                            onClick={() => { setSelected('all'); setGameMode('spelling-typing'); setShuffledItems(shuffleArray(quizItems)); }}
-                        >
-                            <span>타자 게임</span>
-                            <span className="text-sm opacity-80">{isLoadingWords ? '불러오는 중' : '(1~80)'}</span>
-                        </button>
-                    </div>
-                    <div className="mt-6 flex justify-center">
-                        <button
-                            className="px-8 py-4 rounded-2xl bg-white/20 backdrop-blur-sm text-white shadow-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-105 font-medium border border-white/20"
-                            onClick={() => setSelected('result')}
-                        >
-                            결과확인
-                        </button>
-                    </div>
-                </div>
-            ) : selected === 'result' ? (
-                <ResultHistory onGoMain={() => setSelected(null)} />
-            ) : gameMode === 'spelling-typing' ? (
-                // SpellingTypingGame으로 이동
-                <div className="pt-20">
-                    <SpellingTypingGame items={shuffledItems} onGoMain={() => { setSelected(null); setGameMode(null); }} />
-                </div>
-            ) : (
-                // QuizResult로 이동
-                <div className="pt-20">
-                    <QuizResult items={shuffledItems} lesson={selected as 1 | 2 | 3 | 4 | 'all'} onGoMain={() => setSelected(null)} />
-                </div>
-            )}
-        </div>
+                    ))}
+                </section>
+
+                <section className="mt-6 grid gap-3 sm:grid-cols-2">
+                    <button
+                        type="button"
+                        disabled={isLoadingWords}
+                        onClick={() => startQuiz('all', 'quiz')}
+                        className="flex min-h-24 items-center justify-between rounded-lg bg-[#ffb7a8] p-5 text-left text-[#171717] transition hover:-translate-y-1 disabled:opacity-40"
+                    >
+                        <span><span className="block text-xs font-bold opacity-55">FULL TEST</span><span className="mt-1 block text-xl font-black">전체 80개 퀴즈</span></span>
+                        <ArrowRight size={25} />
+                    </button>
+                    <button
+                        type="button"
+                        disabled={isLoadingWords}
+                        onClick={() => startQuiz('all', 'spelling-typing')}
+                        className="flex min-h-24 items-center justify-between rounded-lg bg-[#b8ead6] p-5 text-left text-[#171717] transition hover:-translate-y-1 disabled:opacity-40"
+                    >
+                        <span><span className="block text-xs font-bold opacity-55">SPEED MODE</span><span className="mt-1 block text-xl font-black">전체 타자 게임</span></span>
+                        <Keyboard size={25} />
+                    </button>
+                </section>
+            </div>
+        </main>
     );
 }
