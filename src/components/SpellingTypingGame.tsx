@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { ArrowLeft, Gamepad2, Heart, Keyboard, Play, RotateCcw, Trophy, Zap } from 'lucide-react';
-import type { QuizItem } from '../data/quizData';
+import type { QuizItem } from '../types/quizItem';
 
 interface SpellingTypingGameProps {
     items: QuizItem[];

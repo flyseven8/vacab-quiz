@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { QuizItem } from '../data/quizData';
+import type { QuizItem } from '../types/quizItem';
 
 interface WordMatchingGameProps {
     items: QuizItem[];

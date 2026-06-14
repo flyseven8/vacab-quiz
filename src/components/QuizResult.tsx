@@ -1,10 +1,16 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, Check, CheckCircle2, RotateCcw, Send, Speaker, X } from 'lucide-react';
 import Confetti from 'react-confetti';
-import type { QuizItem } from '../data/quizData';
+import type { QuizItem } from '../types/quizItem';
 import { saveQuizResult } from '../services/quizResults';
 
-type Lesson = 1 | 2 | 3 | 4 | 'all';
+type Lesson = 1 | 2 | 3 | 'all';
+
+const lessonRanges: Record<Exclude<Lesson, 'all'>, string> = {
+    1: '1-25',
+    2: '26-50',
+    3: '51-80',
+};
 
 const QuizResult: React.FC<{ items: QuizItem[]; lesson: Lesson; onGoMain: () => void }> = ({ items, lesson, onGoMain }) => {
     const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -42,7 +48,7 @@ const QuizResult: React.FC<{ items: QuizItem[]; lesson: Lesson; onGoMain: () => 
         const wrongItems = updatedResults.filter((item) => !item.isCorrect);
         const result = {
             date: new Date().toLocaleString(),
-            lesson: lesson === 'all' ? '전체' : `${lesson}과`,
+            lesson: lesson === 'all' ? '전체' : `${lesson}단계`,
             correctCount,
             total: updatedResults.length,
             wrongList: wrongItems.map((item) => ({ korean: item.korean, correct: item.correctAnswer, user: item.userAnswer })),
@@ -89,7 +95,7 @@ const QuizResult: React.FC<{ items: QuizItem[]; lesson: Lesson; onGoMain: () => 
     const wrongCount = quizResults.length - correctCount;
     const passed = wrongCount < 9;
     const allCorrect = submitted && wrongCount === 0;
-    const lessonTitle = lesson === 'all' ? '전체 80개' : `${lesson}세트 · ${(lesson - 1) * 20 + 1}-${lesson * 20}번`;
+    const lessonTitle = lesson === 'all' ? '전체 80개' : `${lesson}단계 · ${lessonRanges[lesson]}번`;
 
     return (
         <main className="min-h-screen bg-[#f6f7f2] text-[#171717] dark:bg-[#171917] dark:text-[#f4f5ef]">

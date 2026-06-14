@@ -1,5 +1,4 @@
-import type { QuizItem } from '../data/quizData';
-import { quizResults22 } from '../data/quizData';
+import type { QuizItem } from '../types/quizItem';
 import { hasSupabaseConfig, supabase } from '../lib/supabase';
 
 type QuizWordRow = {
@@ -10,18 +9,15 @@ type QuizWordRow = {
     korean: string;
 };
 
-export const FALLBACK_QUIZ_ITEMS = quizResults22;
-
 export const splitQuizItems = (items: QuizItem[]) => ({
-    first: items.slice(0, 20),
-    second: items.slice(20, 40),
-    third: items.slice(40, 60),
-    fourth: items.slice(60, 80),
+    first: items.slice(0, 25),
+    second: items.slice(25, 50),
+    third: items.slice(50, 80),
 });
 
 export async function fetchQuizItems(lesson = 19): Promise<QuizItem[]> {
     if (!hasSupabaseConfig || !supabase) {
-        return FALLBACK_QUIZ_ITEMS;
+        throw new Error('Supabase configuration is missing.');
     }
 
     const { data, error } = await supabase

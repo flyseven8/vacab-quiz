@@ -3,35 +3,34 @@ import { ArrowRight, BookOpen, History, Keyboard, Moon, Sparkles, Sun } from 'lu
 import './index.css';
 import QuizResult from './components/QuizResult';
 import SpellingTypingGame from './components/SpellingTypingGame';
-import type { QuizItem } from './data/quizData';
+import type { QuizItem } from './types/quizItem';
 import ResultHistory from './components/ResultHistory';
-import { FALLBACK_QUIZ_ITEMS, fetchQuizItems, splitQuizItems } from './services/quizWords';
+import { fetchQuizItems, splitQuizItems } from './services/quizWords';
 
-type Lesson = 1 | 2 | 3 | 4;
+type Lesson = 1 | 2 | 3;
 type Selection = Lesson | 'all' | 'result' | null;
 
 const lessonMeta = [
-    { id: 1 as Lesson, range: '1-20', accent: 'bg-[#b8ead6]', label: '교통과 동물' },
-    { id: 2 as Lesson, range: '21-40', accent: 'bg-[#f8df74]', label: '장소와 움직임' },
-    { id: 3 as Lesson, range: '41-60', accent: 'bg-[#ffb7a8]', label: '사물과 모험' },
-    { id: 4 as Lesson, range: '61-80', accent: 'bg-[#b9d9ff]', label: '상태와 활동' },
+    { id: 1 as Lesson, range: '1-25', count: 25, accent: 'bg-[#b8ead6]', label: '교통·동물·생활' },
+    { id: 2 as Lesson, range: '26-50', count: 25, accent: 'bg-[#f8df74]', label: '장소·움직임·사물' },
+    { id: 3 as Lesson, range: '51-80', count: 30, accent: 'bg-[#ffb7a8]', label: '모험·활동·상태' },
 ];
 
 export default function App() {
     const [selected, setSelected] = useState<Selection>(null);
     const [gameMode, setGameMode] = useState<'quiz' | 'spelling-typing' | null>(null);
-    const [quizItems, setQuizItems] = useState<QuizItem[]>(FALLBACK_QUIZ_ITEMS);
+    const [quizItems, setQuizItems] = useState<QuizItem[]>([]);
     const [isLoadingWords, setIsLoadingWords] = useState(true);
     const [wordLoadNotice, setWordLoadNotice] = useState('');
     const [shuffledItems, setShuffledItems] = useState<QuizItem[]>([]);
-    const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('isDarkMode') === 'true');
+    const [isDarkMode, setIsDarkMode] = useState(false);
 
     const quizSets = useMemo(() => splitQuizItems(quizItems), [quizItems]);
+    const areWordsReady = !isLoadingWords && quizItems.length === 80;
     const setsByLesson: Record<Lesson, QuizItem[]> = {
         1: quizSets.first,
         2: quizSets.second,
         3: quizSets.third,
-        4: quizSets.fourth,
     };
 
     const shuffleArray = (array: QuizItem[]) => [...array].sort(() => Math.random() - 0.5);
@@ -52,7 +51,6 @@ export default function App() {
 
     useEffect(() => {
         document.documentElement.classList.toggle('dark', isDarkMode);
-        localStorage.setItem('isDarkMode', String(isDarkMode));
     }, [isDarkMode]);
 
     useEffect(() => {
@@ -66,8 +64,8 @@ export default function App() {
             .catch((error) => {
                 if (!isMounted) return;
                 console.error('Supabase 단어 로드 실패:', error);
-                setQuizItems(FALLBACK_QUIZ_ITEMS);
-                setWordLoadNotice('네트워크 연결을 확인해 주세요. 내장 단어로 학습을 계속할 수 있습니다.');
+                setQuizItems([]);
+                setWordLoadNotice('단어를 불러오지 못했습니다. 네트워크 연결을 확인한 뒤 새로고침해 주세요.');
             })
             .finally(() => {
                 if (isMounted) setIsLoadingWords(false);
@@ -120,7 +118,7 @@ export default function App() {
                             오늘의 단어를<br />내 것으로 만드는 시간
                         </h1>
                         <p className="mt-5 max-w-xl text-base leading-7 text-black/55 dark:text-white/55">
-                            20개씩 나눠 집중하거나, 전체 80개를 한 번에 도전하세요.
+                            25개, 25개, 30개로 나눠 집중하거나 전체 80개를 한 번에 도전하세요.
                         </p>
                     </div>
                     <button
@@ -153,12 +151,12 @@ export default function App() {
                             </div>
                             <div>
                                 <p className="font-bold">{lesson.label}</p>
-                                <p className="mt-1 text-sm text-black/45 dark:text-white/45">{lesson.range}번 · 20개 단어</p>
+                                <p className="mt-1 text-sm text-black/45 dark:text-white/45">{lesson.range}번 · {lesson.count}개 단어</p>
                             </div>
                             <div className="col-span-2 flex gap-2 sm:col-span-1">
                                 <button
                                     type="button"
-                                    disabled={isLoadingWords}
+                                    disabled={!areWordsReady}
                                     onClick={() => startQuiz(lesson.id, 'quiz')}
                                     className="flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-[#171717] px-4 text-sm font-bold text-white transition hover:-translate-y-0.5 disabled:opacity-40 dark:bg-[#f4f5ef] dark:text-[#171717]"
                                 >
@@ -166,11 +164,11 @@ export default function App() {
                                 </button>
                                 <button
                                     type="button"
-                                    disabled={isLoadingWords}
+                                    disabled={!areWordsReady}
                                     onClick={() => startQuiz(lesson.id, 'spelling-typing')}
                                     className="grid h-11 w-11 place-items-center rounded-lg border border-black/15 bg-[#f6f7f2] transition hover:-translate-y-0.5 hover:border-black disabled:opacity-40 dark:border-white/15 dark:bg-[#171917] dark:hover:border-white"
                                     title="타자 게임"
-                                    aria-label={`${lesson.id}세트 타자 게임`}
+                                    aria-label={`${lesson.id}단계 타자 게임`}
                                 >
                                     <Keyboard size={19} />
                                 </button>
@@ -182,7 +180,7 @@ export default function App() {
                 <section className="mt-6 grid gap-3 sm:grid-cols-2">
                     <button
                         type="button"
-                        disabled={isLoadingWords}
+                        disabled={!areWordsReady}
                         onClick={() => startQuiz('all', 'quiz')}
                         className="flex min-h-24 items-center justify-between rounded-lg bg-[#ffb7a8] p-5 text-left text-[#171717] transition hover:-translate-y-1 disabled:opacity-40"
                     >
@@ -191,7 +189,7 @@ export default function App() {
                     </button>
                     <button
                         type="button"
-                        disabled={isLoadingWords}
+                        disabled={!areWordsReady}
                         onClick={() => startQuiz('all', 'spelling-typing')}
                         className="flex min-h-24 items-center justify-between rounded-lg bg-[#b8ead6] p-5 text-left text-[#171717] transition hover:-translate-y-1 disabled:opacity-40"
                     >
