@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { QuizResultHistory } from '../utils/localStorage';
-import { deleteAllQuizResults, deleteQuizResult, getQuizResults } from '../services/quizResults';
+import { getQuizResults } from '../services/quizResults';
 
 const ResultHistory: React.FC<{ onGoMain: () => void }> = ({ onGoMain }) => {
     const [history, setHistory] = useState<QuizResultHistory[]>([]);
@@ -8,19 +8,6 @@ const ResultHistory: React.FC<{ onGoMain: () => void }> = ({ onGoMain }) => {
     useEffect(() => {
         getQuizResults().then(setHistory);
     }, []);
-
-    const handleDelete = async (idx: number) => {
-        await deleteQuizResult(idx, history[idx]?.id);
-        const updatedHistory = await getQuizResults();
-        setHistory(updatedHistory);
-    };
-
-    const handleDeleteAll = async () => {
-        if (window.confirm('정말 모든 시험 결과를 삭제하시겠습니까?')) {
-            await deleteAllQuizResults();
-            setHistory([]);
-        }
-    };
 
     return (
         <div className="flex flex-col items-center min-h-screen pt-20 dark:bg-gray-900 dark:text-white">
@@ -47,12 +34,6 @@ const ResultHistory: React.FC<{ onGoMain: () => void }> = ({ onGoMain }) => {
                                     </ul>
                                 </div>
                             )}
-                            <button
-                                onClick={() => handleDelete(idx)}
-                                className="mt-4 px-4 py-1 rounded bg-red-500 text-white hover:bg-red-600 text-sm"
-                            >
-                                삭제
-                            </button>
                         </div>
                     ))}
                 </div>
@@ -64,14 +45,6 @@ const ResultHistory: React.FC<{ onGoMain: () => void }> = ({ onGoMain }) => {
                 >
                     처음으로
                 </button>
-                {history.length > 0 && (
-                    <button
-                        onClick={handleDeleteAll}
-                        className="px-6 py-2 rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors"
-                    >
-                        전체 삭제
-                    </button>
-                )}
             </div>
         </div>
     );
