@@ -1,10 +1,4 @@
-import type { QuizResultHistory } from '../utils/localStorage';
-import {
-    deleteAllQuizResults as deleteAllLocalQuizResults,
-    deleteQuizResult as deleteLocalQuizResult,
-    getLocalQuizResults,
-    saveLocalQuizResult,
-} from '../utils/localStorage';
+import type { QuizResultHistory } from '../types/quizResult';
 import { hasSupabaseConfig, supabase } from '../lib/supabase';
 
 type QuizResultRow = {
@@ -20,7 +14,13 @@ type QuizResultRow = {
 
 type QuizResultInput = Omit<QuizResultHistory, 'timestamp'>;
 
-const canUseSupabase = () => hasSupabaseConfig && supabase;
+const getSupabase = () => {
+    if (!hasSupabaseConfig || !supabase) {
+        throw new Error('Supabase configuration is missing.');
+    }
+
+    return supabase;
+};
 
 const toHistory = (row: QuizResultRow): QuizResultHistory => ({
     id: row.id,
@@ -34,13 +34,8 @@ const toHistory = (row: QuizResultRow): QuizResultHistory => ({
 });
 
 export async function saveQuizResult(result: QuizResultInput): Promise<void> {
-    if (!canUseSupabase()) {
-        saveLocalQuizResult(result);
-        return;
-    }
-
     const timestamp = Date.now();
-    const { error } = await supabase!
+    const { error } = await getSupabase()
         .from('quiz_results')
         .insert({
             date_label: result.date,
@@ -53,59 +48,19 @@ export async function saveQuizResult(result: QuizResultInput): Promise<void> {
         });
 
     if (error) {
-        console.error('Supabase 퀴즈 결과 저장 실패:', error);
-        saveLocalQuizResult(result);
+        throw error;
     }
 }
 
 export async function getQuizResults(): Promise<QuizResultHistory[]> {
-    if (!canUseSupabase()) {
-        return getLocalQuizResults();
-    }
-
-    const { data, error } = await supabase!
+    const { data, error } = await getSupabase()
         .from('quiz_results')
         .select('id, date_label, lesson, correct_count, total, wrong_list, retry, timestamp_ms')
         .order('timestamp_ms', { ascending: false });
 
     if (error) {
-        console.error('Supabase 퀴즈 결과 조회 실패:', error);
-        return getLocalQuizResults();
+        throw error;
     }
 
     return (data as QuizResultRow[]).map(toHistory);
-}
-
-export async function deleteQuizResult(index: number, id?: number): Promise<void> {
-    if (!canUseSupabase() || id === undefined) {
-        deleteLocalQuizResult(index);
-        return;
-    }
-
-    const { error } = await supabase!
-        .from('quiz_results')
-        .delete()
-        .eq('id', id);
-
-    if (error) {
-        console.error('Supabase 퀴즈 결과 삭제 실패:', error);
-        deleteLocalQuizResult(index);
-    }
-}
-
-export async function deleteAllQuizResults(): Promise<void> {
-    if (!canUseSupabase()) {
-        deleteAllLocalQuizResults();
-        return;
-    }
-
-    const { error } = await supabase!
-        .from('quiz_results')
-        .delete()
-        .gte('id', 0);
-
-    if (error) {
-        console.error('Supabase 전체 퀴즈 결과 삭제 실패:', error);
-        deleteAllLocalQuizResults();
-    }
 }

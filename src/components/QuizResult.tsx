@@ -8,6 +8,7 @@ const QuizResult: React.FC<{ items: QuizItem[], lesson: 1 | 2 | 3 | 4 | 'all', o
     const [answers, setAnswers] = useState<{ [key: string]: string }>({});
     const [submitted, setSubmitted] = useState(false);
     const [submittedRetry, setSubmittedRetry] = useState(false);
+    const [saveError, setSaveError] = useState('');
     const [quizResults, setQuizResults] = useState<QuizItem[]>(items);
     const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
@@ -16,6 +17,7 @@ const QuizResult: React.FC<{ items: QuizItem[], lesson: 1 | 2 | 3 | 4 | 'all', o
         setAnswers({});
         setSubmitted(false);
         setSubmittedRetry(false);
+        setSaveError('');
     }, [items]);
 
     useEffect(() => {
@@ -62,7 +64,13 @@ const QuizResult: React.FC<{ items: QuizItem[], lesson: 1 | 2 | 3 | 4 | 'all', o
             wrongList: wrongItems.map(item => ({ korean: item.korean, correct: item.correctAnswer, user: item.userAnswer })),
             retry: submittedRetry
         };
-        await saveQuizResult(result);
+        try {
+            setSaveError('');
+            await saveQuizResult(result);
+        } catch (error) {
+            console.error('Supabase 퀴즈 결과 저장 실패:', error);
+            setSaveError('결과를 저장하지 못했습니다. 잠시 후 다시 제출해 주세요.');
+        }
     };
 
     useEffect(() => {
@@ -76,6 +84,7 @@ const QuizResult: React.FC<{ items: QuizItem[], lesson: 1 | 2 | 3 | 4 | 'all', o
         setSubmitted(false);
         setQuizResults(items);
         setSubmittedRetry(false);
+        setSaveError('');
     };
 
     const handleRetryWrong = () => {
@@ -154,6 +163,11 @@ const QuizResult: React.FC<{ items: QuizItem[], lesson: 1 | 2 | 3 | 4 | 'all', o
                         <p className="mt-2 text-blue-600 dark:text-blue-400 text-lg font-semibold text-center">
                             총 {quizResults.length}문제 중 {wrongCount}문제 틀림
                         </p>
+                        {saveError && (
+                            <p className="mt-3 text-center text-sm font-medium text-red-600 dark:text-red-400">
+                                {saveError}
+                            </p>
+                        )}
                         <div className="flex justify-center mt-4 gap-4">
                             <button
                                 onClick={handleReset}

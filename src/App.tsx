@@ -4,7 +4,6 @@ import QuizResult from "./components/QuizResult";
 import SpellingTypingGame from "./components/SpellingTypingGame";
 import type { QuizItem } from "./data/quizData";
 import ResultHistory from "./components/ResultHistory";
-import { cleanExpiredQuizResults } from "./utils/localStorage";
 import { FALLBACK_QUIZ_ITEMS, fetchQuizItems, splitQuizItems } from "./services/quizWords";
 // import selectGif from './assets/cat.gif';
 
@@ -37,11 +36,6 @@ export default function App() {
         }
         localStorage.setItem('isDarkMode', String(isDarkMode));
     }, [isDarkMode]);
-
-    // 앱 시작시 만료된 퀴즈 결과 정리
-    useEffect(() => {
-        cleanExpiredQuizResults();
-    }, []);
 
     useEffect(() => {
         let isMounted = true;

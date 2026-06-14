@@ -1,18 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import type { QuizResultHistory } from '../utils/localStorage';
+import type { QuizResultHistory } from '../types/quizResult';
 import { getQuizResults } from '../services/quizResults';
 
 const ResultHistory: React.FC<{ onGoMain: () => void }> = ({ onGoMain }) => {
     const [history, setHistory] = useState<QuizResultHistory[]>([]);
+    const [loadError, setLoadError] = useState('');
 
     useEffect(() => {
-        getQuizResults().then(setHistory);
+        getQuizResults()
+            .then(setHistory)
+            .catch((error) => {
+                console.error('Supabase 퀴즈 결과 조회 실패:', error);
+                setLoadError('저장된 결과를 불러오지 못했습니다.');
+            });
     }, []);
 
     return (
         <div className="flex flex-col items-center min-h-screen pt-20 dark:bg-gray-900 dark:text-white">
             <h2 className="text-2xl font-bold mb-6">저장된 시험 결과</h2>
-            {history.length === 0 ? (
+            {loadError ? (
+                <div className="mb-8 text-red-500">{loadError}</div>
+            ) : history.length === 0 ? (
                 <div className="mb-8">저장된 결과가 없습니다.</div>
             ) : (
                 <div className="w-full max-w-xl space-y-6 mb-8">
