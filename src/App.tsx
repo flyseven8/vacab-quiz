@@ -149,10 +149,16 @@ export default function App() {
                             <div className={`grid h-11 w-11 place-items-center rounded-lg text-lg font-black ${lesson.accent} text-[#171717]`}>
                                 {lesson.id}
                             </div>
-                            <div>
+                            <button
+                                type="button"
+                                disabled={!areWordsReady}
+                                onClick={() => startQuiz(lesson.id, 'quiz')}
+                                className="min-w-0 rounded-lg py-1 text-left transition hover:text-black disabled:cursor-not-allowed disabled:opacity-50 dark:hover:text-white"
+                                aria-label={`${lesson.label} ${lesson.range}번 퀴즈 시작`}
+                            >
                                 <p className="font-bold">{lesson.label}</p>
                                 <p className="mt-1 text-sm text-black/45 dark:text-white/45">{lesson.range}번 · {lesson.count}개 단어</p>
-                            </div>
+                            </button>
                             <div className="col-span-2 flex gap-2 sm:col-span-1">
                                 <button
                                     type="button"
