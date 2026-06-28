@@ -64,3 +64,14 @@ export async function getQuizResults(): Promise<QuizResultHistory[]> {
 
     return (data as QuizResultRow[]).map(toHistory);
 }
+
+export async function deleteQuizResult(id: number): Promise<void> {
+    const { error } = await getSupabase()
+        .from('quiz_results')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        throw error;
+    }
+}

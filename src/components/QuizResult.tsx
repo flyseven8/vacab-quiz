@@ -114,7 +114,7 @@ const QuizResult: React.FC<{ items: QuizItem[]; lesson: Lesson; onGoMain: () => 
                 </div>
             </header>
 
-            <div className="mx-auto max-w-5xl px-4 py-7 sm:px-6 sm:py-10">
+            <div className="mx-auto max-w-5xl px-4 pb-28 pt-7 sm:px-6 sm:pb-32 sm:pt-10">
                 {submitted && (
                     <section className={`mb-7 grid gap-5 rounded-lg p-5 text-[#171717] sm:grid-cols-[1fr_auto] sm:items-center ${passed ? 'bg-[#b8ead6]' : 'bg-[#ffb7a8]'}`}>
                         <div>
@@ -173,15 +173,17 @@ const QuizResult: React.FC<{ items: QuizItem[]; lesson: Lesson; onGoMain: () => 
                     })}
                 </section>
 
-                <div className="sticky bottom-4 mt-6 flex justify-end">
-                    <button
-                        type="button"
-                        onClick={handleSubmit}
-                        disabled={submitted}
-                        className="flex h-14 min-w-40 items-center justify-center gap-2 rounded-lg bg-[#171717] px-6 font-black text-white shadow-[0_4px_0_#b8ead6] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-[#f4f5ef] dark:text-[#171717]"
-                    >
-                        <Send size={19} /> {submitted ? '제출 완료' : '답안 제출'}
-                    </button>
+                <div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-[#f6f7f2]/92 px-4 py-3 backdrop-blur dark:border-white/10 dark:bg-[#171917]/92 sm:px-6">
+                    <div className="mx-auto flex max-w-5xl justify-end">
+                        <button
+                            type="button"
+                            onClick={handleSubmit}
+                            disabled={submitted}
+                            className="flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-[#171717] px-6 font-black text-white shadow-[0_4px_0_#b8ead6] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-[#f4f5ef] dark:text-[#171717] sm:w-auto sm:min-w-40"
+                        >
+                            <Send size={19} /> {submitted ? '제출 완료' : '답안 제출'}
+                        </button>
+                    </div>
                 </div>
             </div>
         </main>
