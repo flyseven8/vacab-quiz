@@ -7,17 +7,49 @@ import type { QuizItem } from './types/quizItem';
 import ResultHistory from './components/ResultHistory';
 import { fetchQuizItems, splitQuizItems } from './services/quizWords';
 
+type Grade = 18 | 19 | 20;
 type Lesson = 1 | 2 | 3;
 type Selection = Lesson | 'all' | 'result' | null;
 
+const gradeMeta: Record<Grade, { title: string; description: string; lessonLabels: Record<Lesson, string> }> = {
+    18: {
+        title: '18급 단어 퀴즈',
+        description: '자연, 채소, 운동, 생활 단어를 25개, 25개, 30개로 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
+        lessonLabels: {
+            1: '자연·채소·운동',
+            2: '경기·감정·상상',
+            3: '여행·생활·학습',
+        },
+    },
+    19: {
+        title: '19급 단어 퀴즈',
+        description: '교통, 동물, 생활 단어를 25개, 25개, 30개로 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
+        lessonLabels: {
+            1: '교통·동물·생활',
+            2: '장소·움직임·사물',
+            3: '모험·활동·상태',
+        },
+    },
+    20: {
+        title: '20급 단어 퀴즈',
+        description: '음식, 날씨, 가족, 생활 단어를 25개, 25개, 30개로 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
+        lessonLabels: {
+            1: '음식·날씨·가족',
+            2: '생활·장소·행동',
+            3: '상태·인물·사물',
+        },
+    },
+};
+
 const lessonMeta = [
-    { id: 1 as Lesson, range: '1-25', count: 25, accent: 'bg-[#b8ead6]', label: '교통·동물·생활' },
-    { id: 2 as Lesson, range: '26-50', count: 25, accent: 'bg-[#f8df74]', label: '장소·움직임·사물' },
-    { id: 3 as Lesson, range: '51-80', count: 30, accent: 'bg-[#ffb7a8]', label: '모험·활동·상태' },
+    { id: 1 as Lesson, range: '1-25', count: 25, accent: 'bg-[#b8ead6]' },
+    { id: 2 as Lesson, range: '26-50', count: 25, accent: 'bg-[#f8df74]' },
+    { id: 3 as Lesson, range: '51-80', count: 30, accent: 'bg-[#ffb7a8]' },
 ];
 
 export default function App() {
     const [selected, setSelected] = useState<Selection>(null);
+    const [selectedGrade, setSelectedGrade] = useState<Grade>(19);
     const [gameMode, setGameMode] = useState<'quiz' | 'spelling-typing' | null>(null);
     const [quizItems, setQuizItems] = useState<QuizItem[]>([]);
     const [isLoadingWords, setIsLoadingWords] = useState(true);
@@ -26,6 +58,7 @@ export default function App() {
     const [isDarkMode, setIsDarkMode] = useState(false);
 
     const quizSets = useMemo(() => splitQuizItems(quizItems), [quizItems]);
+    const currentGradeMeta = gradeMeta[selectedGrade];
     const areWordsReady = !isLoadingWords && quizItems.length === 80;
     const setsByLesson: Record<Lesson, QuizItem[]> = {
         1: quizSets.first,
@@ -55,7 +88,11 @@ export default function App() {
 
     useEffect(() => {
         let isMounted = true;
-        fetchQuizItems()
+        setIsLoadingWords(true);
+        setQuizItems([]);
+        setWordLoadNotice('');
+
+        fetchQuizItems(selectedGrade)
             .then((items) => {
                 if (!isMounted) return;
                 setQuizItems(items);
@@ -71,7 +108,7 @@ export default function App() {
                 if (isMounted) setIsLoadingWords(false);
             });
         return () => { isMounted = false; };
-    }, []);
+    }, [selectedGrade]);
 
     if (selected === 'result') {
         return <ResultHistory onGoMain={goMain} />;
@@ -80,7 +117,7 @@ export default function App() {
     if (selected !== null) {
         return gameMode === 'spelling-typing'
             ? <SpellingTypingGame items={shuffledItems} onGoMain={goMain} />
-            : <QuizResult items={shuffledItems} lesson={selected} onGoMain={goMain} />;
+            : <QuizResult items={shuffledItems} grade={selectedGrade} lesson={selected} onGoMain={goMain} />;
     }
 
     return (
@@ -93,7 +130,7 @@ export default function App() {
                         </div>
                         <div>
                             <p className="text-xs font-bold uppercase text-black/45 dark:text-white/45">Vocabulary Lab</p>
-                            <p className="font-bold">19과 단어 퀴즈</p>
+                            <p className="font-bold">{currentGradeMeta.title}</p>
                         </div>
                     </div>
                     <button
@@ -112,14 +149,26 @@ export default function App() {
                 <section className="mb-10 grid gap-7 lg:grid-cols-[1fr_320px] lg:items-end">
                     <div>
                         <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-[#b8ead6] px-3 py-1.5 text-xs font-bold text-[#173d31]">
-                            <Sparkles size={14} /> 80 WORDS READY
+                            <Sparkles size={14} /> {selectedGrade}급 80 WORDS
                         </div>
                         <h1 className="max-w-3xl text-4xl font-black leading-[1.08] sm:text-6xl">
                             오늘의 단어를<br />내 것으로 만드는 시간
                         </h1>
                         <p className="mt-5 max-w-xl text-base leading-7 text-black/55 dark:text-white/55">
-                            25개, 25개, 30개로 나눠 집중하거나 전체 80개를 한 번에 도전하세요.
+                            {currentGradeMeta.description}
                         </p>
+                        <div className="mt-6 inline-flex rounded-lg border border-black/15 bg-white p-1 dark:border-white/15 dark:bg-[#242724]">
+                            {([18, 19, 20] as Grade[]).map((grade) => (
+                                <button
+                                    key={grade}
+                                    type="button"
+                                    onClick={() => setSelectedGrade(grade)}
+                                    className={`h-10 rounded-md px-5 text-sm font-black transition ${selectedGrade === grade ? 'bg-[#171717] text-white dark:bg-[#f4f5ef] dark:text-[#171717]' : 'text-black/45 hover:text-black dark:text-white/45 dark:hover:text-white'}`}
+                                >
+                                    {grade}급
+                                </button>
+                            ))}
+                        </div>
                     </div>
                     <button
                         type="button"
@@ -154,9 +203,9 @@ export default function App() {
                                 disabled={!areWordsReady}
                                 onClick={() => startQuiz(lesson.id, 'quiz')}
                                 className="min-w-0 rounded-lg py-1 text-left transition hover:text-black disabled:cursor-not-allowed disabled:opacity-50 dark:hover:text-white"
-                                aria-label={`${lesson.label} ${lesson.range}번 퀴즈 시작`}
+                                aria-label={`${currentGradeMeta.lessonLabels[lesson.id]} ${lesson.range}번 퀴즈 시작`}
                             >
-                                <p className="font-bold">{lesson.label}</p>
+                                <p className="font-bold">{currentGradeMeta.lessonLabels[lesson.id]}</p>
                                 <p className="mt-1 text-sm text-black/45 dark:text-white/45">{lesson.range}번 · {lesson.count}개 단어</p>
                             </button>
                             <div className="col-span-2 flex gap-2 sm:col-span-1">
@@ -174,7 +223,7 @@ export default function App() {
                                     onClick={() => startQuiz(lesson.id, 'spelling-typing')}
                                     className="grid h-11 w-11 place-items-center rounded-lg border border-black/15 bg-[#f6f7f2] transition hover:-translate-y-0.5 hover:border-black disabled:opacity-40 dark:border-white/15 dark:bg-[#171917] dark:hover:border-white"
                                     title="타자 게임"
-                                    aria-label={`${lesson.id}단계 타자 게임`}
+                                    aria-label={`${selectedGrade}급 ${lesson.id}단계 타자 게임`}
                                 >
                                     <Keyboard size={19} />
                                 </button>

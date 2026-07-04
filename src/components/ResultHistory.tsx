@@ -20,6 +20,8 @@ const getGroupKey = (timestamp: number) => {
     return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 };
 
+const formatLessonLabel = (lesson: string) => lesson.includes('급') ? lesson : `19급 · ${lesson}`;
+
 const ResultHistory: React.FC<{ onGoMain: () => void }> = ({ onGoMain }) => {
     const [history, setHistory] = useState<QuizResultHistory[]>([]);
     const [loadError, setLoadError] = useState('');
@@ -125,7 +127,7 @@ const ResultHistory: React.FC<{ onGoMain: () => void }> = ({ onGoMain }) => {
                                                             </span>
                                                             {item.retry && <span className="rounded-full bg-[#f8df74] px-2.5 py-1 text-xs font-black text-[#5f4b00]">오답 재시험</span>}
                                                         </div>
-                                                        <h3 className="mt-3 text-xl font-black">19과 · {item.lesson}</h3>
+                                                        <h3 className="mt-3 text-xl font-black">{formatLessonLabel(item.lesson)}</h3>
                                                         <p className="mt-1 flex items-center gap-1.5 text-sm text-black/45 dark:text-white/45"><Clock3 size={14} /> {item.date}</p>
                                                     </div>
                                                     <div className="flex items-center justify-between gap-3 sm:justify-end sm:text-right">

@@ -5,6 +5,7 @@ import type { QuizItem } from '../types/quizItem';
 import { saveQuizResult } from '../services/quizResults';
 
 type Lesson = 1 | 2 | 3 | 'all';
+type Grade = 18 | 19 | 20;
 
 const lessonRanges: Record<Exclude<Lesson, 'all'>, string> = {
     1: '1-25',
@@ -12,7 +13,7 @@ const lessonRanges: Record<Exclude<Lesson, 'all'>, string> = {
     3: '51-80',
 };
 
-const QuizResult: React.FC<{ items: QuizItem[]; lesson: Lesson; onGoMain: () => void }> = ({ items, lesson, onGoMain }) => {
+const QuizResult: React.FC<{ items: QuizItem[]; grade: Grade; lesson: Lesson; onGoMain: () => void }> = ({ items, grade, lesson, onGoMain }) => {
     const [answers, setAnswers] = useState<Record<string, string>>({});
     const [submitted, setSubmitted] = useState(false);
     const [submittedRetry, setSubmittedRetry] = useState(false);
@@ -48,7 +49,7 @@ const QuizResult: React.FC<{ items: QuizItem[]; lesson: Lesson; onGoMain: () => 
         const wrongItems = updatedResults.filter((item) => !item.isCorrect);
         const result = {
             date: new Date().toLocaleString(),
-            lesson: lesson === 'all' ? '전체' : `${lesson}단계`,
+            lesson: lesson === 'all' ? `${grade}급 · 전체` : `${grade}급 · ${lesson}단계`,
             correctCount,
             total: updatedResults.length,
             wrongList: wrongItems.map((item) => ({ korean: item.korean, correct: item.correctAnswer, user: item.userAnswer })),
@@ -107,7 +108,7 @@ const QuizResult: React.FC<{ items: QuizItem[]; lesson: Lesson; onGoMain: () => 
                         <ArrowLeft size={19} /> <span className="hidden sm:inline">처음으로</span>
                     </button>
                     <div className="text-center">
-                        <p className="text-xs font-bold text-black/40 dark:text-white/40">19과 단어 시험</p>
+                        <p className="text-xs font-bold text-black/40 dark:text-white/40">{grade}급 단어 시험</p>
                         <p className="font-black">{lessonTitle}</p>
                     </div>
                     <div className="min-w-14 text-right text-sm font-bold">{quizResults.length}문제</div>
