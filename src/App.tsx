@@ -6,51 +6,48 @@ import SpellingTypingGame from './components/SpellingTypingGame';
 import type { QuizItem } from './types/quizItem';
 import ResultHistory from './components/ResultHistory';
 import { fetchQuizItems, splitQuizItems } from './services/quizWords';
+import VocabularyStudy from './components/VocabularyStudy';
 
 type Grade = 18 | 19 | 20;
-type Lesson = 1 | 2 | 3;
+type Lesson = 1 | 2;
 type Selection = Lesson | 'all' | 'result' | null;
 
 const gradeMeta: Record<Grade, { title: string; description: string; lessonLabels: Record<Lesson, string> }> = {
     18: {
         title: '18급 단어 퀴즈',
-        description: '자연, 채소, 운동, 생활 단어를 25개, 25개, 30개로 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
+        description: '자연, 채소, 운동, 생활 단어를 40개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
         lessonLabels: {
             1: '자연·채소·운동',
-            2: '경기·감정·상상',
-            3: '여행·생활·학습',
+            2: '경기·감정·생활',
         },
     },
     19: {
         title: '19급 단어 퀴즈',
-        description: '교통, 동물, 생활 단어를 25개, 25개, 30개로 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
+        description: '교통, 동물, 생활 단어를 40개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
         lessonLabels: {
             1: '교통·동물·생활',
             2: '장소·움직임·사물',
-            3: '모험·활동·상태',
         },
     },
     20: {
         title: '20급 단어 퀴즈',
-        description: '음식, 날씨, 가족, 생활 단어를 25개, 25개, 30개로 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
+        description: '음식, 날씨, 가족, 생활 단어를 40개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
         lessonLabels: {
             1: '음식·날씨·가족',
-            2: '생활·장소·행동',
-            3: '상태·인물·사물',
+            2: '생활·상태·사물',
         },
     },
 };
 
 const lessonMeta = [
-    { id: 1 as Lesson, range: '1-25', count: 25, accent: 'bg-[#b8ead6]' },
-    { id: 2 as Lesson, range: '26-50', count: 25, accent: 'bg-[#f8df74]' },
-    { id: 3 as Lesson, range: '51-80', count: 30, accent: 'bg-[#ffb7a8]' },
+    { id: 1 as Lesson, range: '1-40', count: 40, accent: 'bg-[#b8ead6]' },
+    { id: 2 as Lesson, range: '41-80', count: 40, accent: 'bg-[#f8df74]' },
 ];
 
 export default function App() {
     const [selected, setSelected] = useState<Selection>(null);
     const [selectedGrade, setSelectedGrade] = useState<Grade>(19);
-    const [gameMode, setGameMode] = useState<'quiz' | 'spelling-typing' | null>(null);
+    const [gameMode, setGameMode] = useState<'quiz' | 'spelling-typing' | 'study' | null>(null);
     const [quizItems, setQuizItems] = useState<QuizItem[]>([]);
     const [isLoadingWords, setIsLoadingWords] = useState(true);
     const [wordLoadNotice, setWordLoadNotice] = useState('');
@@ -63,7 +60,6 @@ export default function App() {
     const setsByLesson: Record<Lesson, QuizItem[]> = {
         1: quizSets.first,
         2: quizSets.second,
-        3: quizSets.third,
     };
 
     const shuffleArray = (array: QuizItem[]) => [...array].sort(() => Math.random() - 0.5);
@@ -74,6 +70,19 @@ export default function App() {
         setSelected(lesson);
         setGameMode(mode === 'quiz' ? null : mode);
         setShuffledItems(shuffleArray(items));
+    };
+
+    const startStudy = (lesson: Lesson | 'all') => {
+        const items = lesson === 'all' ? quizItems : setsByLesson[lesson];
+        window.scrollTo({ top: 0 });
+        setSelected(lesson);
+        setGameMode('study');
+        setShuffledItems(items);
+    };
+
+    const startQuizFromStudy = () => {
+        if (selected === 'result' || selected === null) return;
+        startQuiz(selected, 'quiz');
     };
 
     const goMain = () => {
@@ -115,6 +124,10 @@ export default function App() {
     }
 
     if (selected !== null) {
+        if (gameMode === 'study') {
+            return <VocabularyStudy items={shuffledItems} grade={selectedGrade} lesson={selected} onGoMain={goMain} onStartQuiz={startQuizFromStudy} />;
+        }
+
         return gameMode === 'spelling-typing'
             ? <SpellingTypingGame items={shuffledItems} onGoMain={goMain} />
             : <QuizResult items={shuffledItems} grade={selectedGrade} lesson={selected} onGoMain={goMain} />;
@@ -190,11 +203,11 @@ export default function App() {
                 )}
 
                 <section className="overflow-hidden rounded-lg border border-black/15 bg-white dark:border-white/15 dark:bg-[#242724]">
-                    <div className="grid grid-cols-[64px_1fr_auto] items-center border-b border-black/10 px-4 py-3 text-xs font-bold text-black/40 dark:border-white/10 dark:text-white/40 sm:grid-cols-[90px_1fr_270px] sm:px-6">
+                    <div className="grid grid-cols-[64px_1fr_auto] items-center border-b border-black/10 px-4 py-3 text-xs font-bold text-black/40 dark:border-white/10 dark:text-white/40 sm:grid-cols-[90px_1fr_360px] sm:px-6">
                         <span>SET</span><span>RANGE</span><span className="hidden sm:block">MODE</span>
                     </div>
                     {lessonMeta.map((lesson) => (
-                        <div key={lesson.id} className="grid grid-cols-[64px_1fr] gap-3 border-b border-black/10 px-4 py-5 last:border-0 dark:border-white/10 sm:grid-cols-[90px_1fr_270px] sm:items-center sm:px-6">
+                        <div key={lesson.id} className="grid grid-cols-[64px_1fr] gap-3 border-b border-black/10 px-4 py-5 last:border-0 dark:border-white/10 sm:grid-cols-[90px_1fr_360px] sm:items-center sm:px-6">
                             <div className={`grid h-11 w-11 place-items-center rounded-lg text-lg font-black ${lesson.accent} text-[#171717]`}>
                                 {lesson.id}
                             </div>
@@ -209,6 +222,14 @@ export default function App() {
                                 <p className="mt-1 text-sm text-black/45 dark:text-white/45">{lesson.range}번 · {lesson.count}개 단어</p>
                             </button>
                             <div className="col-span-2 flex gap-2 sm:col-span-1">
+                                <button
+                                    type="button"
+                                    disabled={!areWordsReady}
+                                    onClick={() => startStudy(lesson.id)}
+                                    className="flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border border-black/15 bg-[#f6f7f2] px-3 text-sm font-bold transition hover:-translate-y-0.5 hover:border-black disabled:opacity-40 dark:border-white/15 dark:bg-[#171917] dark:hover:border-white"
+                                >
+                                    <BookOpen size={16} /> 학습하기
+                                </button>
                                 <button
                                     type="button"
                                     disabled={!areWordsReady}
@@ -232,7 +253,16 @@ export default function App() {
                     ))}
                 </section>
 
-                <section className="mt-6 grid gap-3 sm:grid-cols-2">
+                <section className="mt-6 grid gap-3 lg:grid-cols-3">
+                    <button
+                        type="button"
+                        disabled={!areWordsReady}
+                        onClick={() => startStudy('all')}
+                        className="flex min-h-24 items-center justify-between rounded-lg bg-[#f8df74] p-5 text-left text-[#171717] transition hover:-translate-y-1 disabled:opacity-40"
+                    >
+                        <span><span className="block text-xs font-bold opacity-55">FULL STUDY</span><span className="mt-1 block text-xl font-black">전체 80개 학습</span></span>
+                        <BookOpen size={25} />
+                    </button>
                     <button
                         type="button"
                         disabled={!areWordsReady}

@@ -10,9 +10,8 @@ type QuizWordRow = {
 };
 
 export const splitQuizItems = (items: QuizItem[]) => ({
-    first: items.slice(0, 25),
-    second: items.slice(25, 50),
-    third: items.slice(50, 80),
+    first: items.slice(0, 40),
+    second: items.slice(40, 80),
 });
 
 export async function fetchQuizItems(lesson = 19): Promise<QuizItem[]> {

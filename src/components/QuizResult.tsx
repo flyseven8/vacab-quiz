@@ -4,13 +4,12 @@ import Confetti from 'react-confetti';
 import type { QuizItem } from '../types/quizItem';
 import { saveQuizResult } from '../services/quizResults';
 
-type Lesson = 1 | 2 | 3 | 'all';
+type Lesson = 1 | 2 | 'all';
 type Grade = 18 | 19 | 20;
 
 const lessonRanges: Record<Exclude<Lesson, 'all'>, string> = {
-    1: '1-25',
-    2: '26-50',
-    3: '51-80',
+    1: '1-40',
+    2: '41-80',
 };
 
 const QuizResult: React.FC<{ items: QuizItem[]; grade: Grade; lesson: Lesson; onGoMain: () => void }> = ({ items, grade, lesson, onGoMain }) => {
@@ -70,6 +69,12 @@ const QuizResult: React.FC<{ items: QuizItem[]; grade: Grade; lesson: Lesson; on
     }, [submitted]);
 
     const handleReset = () => {
+        const hasWrongAnswers = submitted && quizResults.some((item) => item.isCorrect === false);
+
+        if (hasWrongAnswers && !window.confirm('오답이 남아 있습니다. 처음부터 다시 풀까요?')) {
+            return;
+        }
+
         setAnswers({});
         setSubmitted(false);
         setQuizResults(items);
