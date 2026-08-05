@@ -9,39 +9,43 @@ import { fetchQuizItems, splitQuizItems } from './services/quizWords';
 import VocabularyStudy from './components/VocabularyStudy';
 
 type Grade = 18 | 19 | 20;
-type Lesson = 1 | 2;
+type Lesson = 1 | 2 | 3;
 type Selection = Lesson | 'all' | 'result' | null;
 
 const gradeMeta: Record<Grade, { title: string; description: string; lessonLabels: Record<Lesson, string> }> = {
     18: {
         title: '18급 단어 퀴즈',
-        description: '자연, 채소, 운동, 생활 단어를 40개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
+        description: '자연, 채소, 운동, 생활 단어를 25개·25개·30개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
         lessonLabels: {
             1: '자연·채소·운동',
             2: '경기·감정·생활',
+            3: '일상·학습·활동',
         },
     },
     19: {
         title: '19급 단어 퀴즈',
-        description: '교통, 동물, 생활 단어를 40개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
+        description: '교통, 동물, 생활 단어를 25개·25개·30개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
         lessonLabels: {
             1: '교통·동물·생활',
             2: '장소·움직임·사물',
+            3: '일상·상태·활동',
         },
     },
     20: {
         title: '20급 단어 퀴즈',
-        description: '음식, 날씨, 가족, 생활 단어를 40개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
+        description: '음식, 날씨, 가족, 생활 단어를 25개·25개·30개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
         lessonLabels: {
             1: '음식·날씨·가족',
             2: '생활·상태·사물',
+            3: '일상·감정·활동',
         },
     },
 };
 
 const lessonMeta = [
-    { id: 1 as Lesson, range: '1-40', count: 40, accent: 'bg-[#b8ead6]' },
-    { id: 2 as Lesson, range: '41-80', count: 40, accent: 'bg-[#f8df74]' },
+    { id: 1 as Lesson, range: '1-25', count: 25, accent: 'bg-[#b8ead6]' },
+    { id: 2 as Lesson, range: '26-50', count: 25, accent: 'bg-[#f8df74]' },
+    { id: 3 as Lesson, range: '51-80', count: 30, accent: 'bg-[#ffb7a8]' },
 ];
 
 export default function App() {
@@ -60,6 +64,7 @@ export default function App() {
     const setsByLesson: Record<Lesson, QuizItem[]> = {
         1: quizSets.first,
         2: quizSets.second,
+        3: quizSets.third,
     };
 
     const shuffleArray = (array: QuizItem[]) => [...array].sort(() => Math.random() - 0.5);

@@ -2,11 +2,12 @@ import { ArrowLeft, Play, Volume2 } from 'lucide-react';
 import type { QuizItem } from '../types/quizItem';
 
 type Grade = 18 | 19 | 20;
-type Lesson = 1 | 2 | 'all';
+type Lesson = 1 | 2 | 3 | 'all';
 
 const lessonRanges: Record<Exclude<Lesson, 'all'>, string> = {
-    1: '1-40',
-    2: '41-80',
+    1: '1-25',
+    2: '26-50',
+    3: '51-80',
 };
 
 const getLessonTitle = (lesson: Lesson) => lesson === 'all' ? '전체 80개' : `${lesson}단계 · ${lessonRanges[lesson]}번`;
@@ -27,7 +28,7 @@ const VocabularyStudy: React.FC<{
     onGoMain: () => void;
     onStartQuiz: () => void;
 }> = ({ items, grade, lesson, onGoMain, onStartQuiz }) => {
-    const startNumber = lesson === 'all' ? 1 : lesson === 1 ? 1 : 41;
+    const startNumber = lesson === 'all' ? 1 : lesson === 1 ? 1 : lesson === 2 ? 26 : 51;
 
     return (
         <main className="min-h-screen bg-[#f6f7f2] text-[#171717] dark:bg-[#171917] dark:text-[#f4f5ef]">
