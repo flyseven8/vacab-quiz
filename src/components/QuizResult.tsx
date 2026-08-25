@@ -102,6 +102,7 @@ const QuizResult: React.FC<{ items: QuizItem[]; grade: Grade; lesson: Lesson; on
     const wrongCount = quizResults.length - correctCount;
     const passed = wrongCount < 9;
     const allCorrect = submitted && wrongCount === 0;
+    const firstTryOneWrong = submitted && !submittedRetry && wrongCount === 1;
     const lessonTitle = lesson === 'all' ? '전체 80개' : `${lesson}단계 · ${lessonRanges[lesson]}번`;
 
     return (
@@ -155,6 +156,14 @@ const QuizResult: React.FC<{ items: QuizItem[]; grade: Grade; lesson: Lesson; on
                                 </button>
                             )}
                         </div>
+                    </section>
+                )}
+
+                {firstTryOneWrong && (
+                    <section className="mb-7 rounded-lg border-2 border-[#f0bd32] bg-[#fff4c7] p-6 text-center text-[#5f4300] shadow-[0_4px_0_#f0bd32] dark:bg-[#3b321b] dark:text-[#ffe89a]">
+                        <p className="text-xs font-black tracking-[0.18em]">SPECIAL REWARD</p>
+                        <p className="mt-2 text-2xl font-black">용돈 3,000원</p>
+                        <p className="mt-2 text-sm font-bold">아빠에게 보여주세요!</p>
                     </section>
                 )}
 
