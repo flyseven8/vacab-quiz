@@ -106,7 +106,20 @@ const QuizResult: React.FC<{ items: QuizItem[]; grade: Grade; lesson: Lesson; on
 
     return (
         <main className="min-h-screen bg-[#f6f7f2] text-[#171717] dark:bg-[#171917] dark:text-[#f4f5ef]">
-            {allCorrect && <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={500} />}
+            {allCorrect && (
+                <Confetti
+                    key={`perfect-${quizResults.length}-${submittedRetry}`}
+                    width={windowSize.width}
+                    height={windowSize.height}
+                    recycle={false}
+                    run
+                    numberOfPieces={900}
+                    gravity={0.18}
+                    initialVelocityY={18}
+                    tweenDuration={7000}
+                    style={{ zIndex: 100, pointerEvents: 'none' }}
+                />
+            )}
 
             <header className="sticky top-0 z-30 border-b border-black/10 bg-[#f6f7f2]/95 backdrop-blur dark:border-white/10 dark:bg-[#171917]/95">
                 <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
