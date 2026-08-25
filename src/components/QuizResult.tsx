@@ -3,6 +3,7 @@ import { ArrowLeft, Check, CheckCircle2, RotateCcw, Send, Speaker, X } from 'luc
 import Confetti from 'react-confetti';
 import type { QuizItem } from '../types/quizItem';
 import { saveQuizResult } from '../services/quizResults';
+import catGif from '../assets/cat.gif';
 
 type Lesson = 1 | 2 | 3 | 'all';
 type Grade = 18 | 19 | 20;
@@ -103,6 +104,16 @@ const QuizResult: React.FC<{ items: QuizItem[]; grade: Grade; lesson: Lesson; on
     const passed = wrongCount < 9;
     const allCorrect = submitted && wrongCount === 0;
     const firstTryOneWrong = submitted && !submittedRetry && wrongCount === 1;
+    const score = Math.round((correctCount / quizResults.length) * 100);
+    const catEvent = submitted && (
+        score === 100
+            ? { title: '단어 마스터!', message: '왕관 쓴 고양이가 축하해요.', alt: '왕관 쓴 고양이', icon: '👑' }
+            : score === 80
+                ? { title: '아주 잘했어요!', message: '선글라스 고양이가 멋지다고 하네요.', alt: '선글라스 고양이', icon: '😎' }
+                : score === 50
+                    ? { title: '절반 성공!', message: '응원하는 고양이가 다음 도전을 응원해요.', alt: '응원하는 고양이', icon: '👏' }
+                    : null
+    );
     const lessonTitle = lesson === 'all' ? '전체 80개' : `${lesson}단계 · ${lessonRanges[lesson]}번`;
 
     return (
@@ -164,6 +175,20 @@ const QuizResult: React.FC<{ items: QuizItem[]; grade: Grade; lesson: Lesson; on
                         <p className="text-xs font-black tracking-[0.18em]">SPECIAL REWARD</p>
                         <p className="mt-2 text-2xl font-black">용돈 3,000원</p>
                         <p className="mt-2 text-sm font-bold">아빠에게 보여주세요!</p>
+                    </section>
+                )}
+
+                {catEvent && (
+                    <section className="mb-7 flex items-center justify-center gap-4 rounded-lg border border-black/10 bg-white p-4 shadow-[0_4px_0_#171717] dark:border-white/10 dark:bg-[#242724] dark:shadow-[0_4px_0_#f4f5ef]">
+                        <div className="relative">
+                            <img src={catGif} alt={catEvent.alt} className="h-20 w-20 rounded-full object-cover" />
+                            <span className="absolute -right-2 -top-2 text-2xl" aria-hidden="true">{catEvent.icon}</span>
+                        </div>
+                        <div>
+                            <p className="text-xs font-black tracking-[0.18em] text-black/45 dark:text-white/45">CAT EVENT · {score}점</p>
+                            <p className="mt-1 text-xl font-black">{catEvent.title}</p>
+                            <p className="mt-1 text-sm font-bold text-black/55 dark:text-white/55">{catEvent.message}</p>
+                        </div>
                     </section>
                 )}
 
