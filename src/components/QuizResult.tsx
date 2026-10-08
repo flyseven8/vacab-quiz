@@ -6,7 +6,7 @@ import { saveQuizResult } from '../services/quizResults';
 import catGif from '../assets/cat.gif';
 
 type Lesson = 1 | 2 | 3 | 'all';
-type Grade = 18 | 19 | 20;
+type Grade = 16 | 17 | 18 | 19 | 20;
 
 const lessonRanges: Record<Exclude<Lesson, 'all'>, string> = {
     1: '1-25',

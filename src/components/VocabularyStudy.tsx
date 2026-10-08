@@ -1,7 +1,7 @@
 import { ArrowLeft, Play, Volume2 } from 'lucide-react';
 import type { QuizItem } from '../types/quizItem';
 
-type Grade = 18 | 19 | 20;
+type Grade = 16 | 17 | 18 | 19 | 20;
 type Lesson = 1 | 2 | 3 | 'all';
 
 const lessonRanges: Record<Exclude<Lesson, 'all'>, string> = {

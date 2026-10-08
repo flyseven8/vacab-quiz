@@ -8,11 +8,29 @@ import ResultHistory from './components/ResultHistory';
 import { fetchQuizItems, splitQuizItems } from './services/quizWords';
 import VocabularyStudy from './components/VocabularyStudy';
 
-type Grade = 18 | 19 | 20;
+type Grade = 16 | 17 | 18 | 19 | 20;
 type Lesson = 1 | 2 | 3;
 type Selection = Lesson | 'all' | 'result' | null;
 
 const gradeMeta: Record<Grade, { title: string; description: string; lessonLabels: Record<Lesson, string> }> = {
+    16: {
+        title: '16급 단어 퀴즈',
+        description: '학교, 생활, 건강, 동물 단어를 25개·25개·30개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
+        lessonLabels: {
+            1: '학교·생활·선택',
+            2: '건강·방향·상태',
+            3: '파충류·물고기',
+        },
+    },
+    17: {
+        title: '17급 단어 퀴즈',
+        description: '위치, 사람, 장신구, 도구, 생활 단어를 25개·25개·30개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
+        lessonLabels: {
+            1: '위치·행동·사람',
+            2: '충고·장소·장신구',
+            3: '도구·몸·생활',
+        },
+    },
     18: {
         title: '18급 단어 퀴즈',
         description: '자연, 채소, 운동, 생활 단어를 25개·25개·30개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
@@ -176,7 +194,7 @@ export default function App() {
                             {currentGradeMeta.description}
                         </p>
                         <div className="mt-6 inline-flex rounded-lg border border-black/15 bg-white p-1 dark:border-white/15 dark:bg-[#242724]">
-                            {([18, 19, 20] as Grade[]).map((grade) => (
+                            {([16, 17, 18, 19, 20] as Grade[]).map((grade) => (
                                 <button
                                     key={grade}
                                     type="button"
