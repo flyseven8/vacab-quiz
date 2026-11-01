@@ -10,12 +10,12 @@ type QuizWordRow = {
 };
 
 export const splitQuizItems = (items: QuizItem[]) => ({
-    first: items.slice(0, 25),
-    second: items.slice(25, 50),
-    third: items.slice(50, 80),
+    first: items.slice(0, 30),
+    second: items.slice(30, 60),
+    third: items.slice(60, 100),
 });
 
-export async function fetchQuizItems(lesson = 19): Promise<QuizItem[]> {
+export async function fetchQuizItems(lesson = 15): Promise<QuizItem[]> {
     if (!hasSupabaseConfig || !supabase) {
         throw new Error('Supabase configuration is missing.');
     }

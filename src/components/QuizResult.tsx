@@ -6,12 +6,12 @@ import { saveQuizResult } from '../services/quizResults';
 import catGif from '../assets/cat.gif';
 
 type Lesson = 1 | 2 | 3 | 'all';
-type Grade = 16 | 17 | 18 | 19 | 20;
+type Grade = 15;
 
 const lessonRanges: Record<Exclude<Lesson, 'all'>, string> = {
-    1: '1-25',
-    2: '26-50',
-    3: '51-80',
+    1: '1-30',
+    2: '31-60',
+    3: '61-100',
 };
 
 const QuizResult: React.FC<{ items: QuizItem[]; grade: Grade; lesson: Lesson; onGoMain: () => void }> = ({ items, grade, lesson, onGoMain }) => {
@@ -114,7 +114,7 @@ const QuizResult: React.FC<{ items: QuizItem[]; grade: Grade; lesson: Lesson; on
                     ? { title: '절반 성공!', message: '응원하는 고양이가 다음 도전을 응원해요.', alt: '응원하는 고양이', icon: '👏' }
                     : null
     );
-    const lessonTitle = lesson === 'all' ? '전체 80개' : `${lesson}단계 · ${lessonRanges[lesson]}번`;
+    const lessonTitle = lesson === 'all' ? '전체 100개' : `${lesson}단계 · ${lessonRanges[lesson]}번`;
 
     return (
         <main className="min-h-screen bg-[#f6f7f2] text-[#171717] dark:bg-[#171917] dark:text-[#f4f5ef]">

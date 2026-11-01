@@ -8,67 +8,31 @@ import ResultHistory from './components/ResultHistory';
 import { fetchQuizItems, splitQuizItems } from './services/quizWords';
 import VocabularyStudy from './components/VocabularyStudy';
 
-type Grade = 16 | 17 | 18 | 19 | 20;
+type Grade = 15;
 type Lesson = 1 | 2 | 3;
 type Selection = Lesson | 'all' | 'result' | null;
 
 const gradeMeta: Record<Grade, { title: string; description: string; lessonLabels: Record<Lesson, string> }> = {
-    16: {
-        title: '16급 단어 퀴즈',
-        description: '학교, 생활, 건강, 동물 단어를 25개·25개·30개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
+    15: {
+        title: '15급 단어 퀴즈',
+        description: '과학, 환경, 예술, 생활 단어를 30개·30개·40개씩 나눠 집중하거나 전체 100개를 한 번에 도전하세요.',
         lessonLabels: {
-            1: '학교·생활·선택',
-            2: '건강·방향·상태',
-            3: '파충류·물고기',
-        },
-    },
-    17: {
-        title: '17급 단어 퀴즈',
-        description: '위치, 사람, 장신구, 도구, 생활 단어를 25개·25개·30개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
-        lessonLabels: {
-            1: '위치·행동·사람',
-            2: '충고·장소·장신구',
-            3: '도구·몸·생활',
-        },
-    },
-    18: {
-        title: '18급 단어 퀴즈',
-        description: '자연, 채소, 운동, 생활 단어를 25개·25개·30개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
-        lessonLabels: {
-            1: '자연·채소·운동',
-            2: '경기·감정·생활',
-            3: '일상·학습·활동',
-        },
-    },
-    19: {
-        title: '19급 단어 퀴즈',
-        description: '교통, 동물, 생활 단어를 25개·25개·30개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
-        lessonLabels: {
-            1: '교통·동물·생활',
-            2: '장소·움직임·사물',
-            3: '일상·상태·활동',
-        },
-    },
-    20: {
-        title: '20급 단어 퀴즈',
-        description: '음식, 날씨, 가족, 생활 단어를 25개·25개·30개씩 나눠 집중하거나 전체 80개를 한 번에 도전하세요.',
-        lessonLabels: {
-            1: '음식·날씨·가족',
-            2: '생활·상태·사물',
-            3: '일상·감정·활동',
+            1: '과학·환경·예술',
+            2: '공연·자연·상태',
+            3: '생활·여행·사회',
         },
     },
 };
 
 const lessonMeta = [
-    { id: 1 as Lesson, range: '1-25', count: 25, accent: 'bg-[#b8ead6]' },
-    { id: 2 as Lesson, range: '26-50', count: 25, accent: 'bg-[#f8df74]' },
-    { id: 3 as Lesson, range: '51-80', count: 30, accent: 'bg-[#ffb7a8]' },
+    { id: 1 as Lesson, range: '1-30', count: 30, accent: 'bg-[#b8ead6]' },
+    { id: 2 as Lesson, range: '31-60', count: 30, accent: 'bg-[#f8df74]' },
+    { id: 3 as Lesson, range: '61-100', count: 40, accent: 'bg-[#ffb7a8]' },
 ];
 
 export default function App() {
     const [selected, setSelected] = useState<Selection>(null);
-    const [selectedGrade, setSelectedGrade] = useState<Grade>(19);
+    const selectedGrade: Grade = 15;
     const [gameMode, setGameMode] = useState<'quiz' | 'spelling-typing' | 'study' | null>(null);
     const [quizItems, setQuizItems] = useState<QuizItem[]>([]);
     const [isLoadingWords, setIsLoadingWords] = useState(true);
@@ -78,7 +42,7 @@ export default function App() {
 
     const quizSets = useMemo(() => splitQuizItems(quizItems), [quizItems]);
     const currentGradeMeta = gradeMeta[selectedGrade];
-    const areWordsReady = !isLoadingWords && quizItems.length === 80;
+    const areWordsReady = !isLoadingWords && quizItems.length === 100;
     const setsByLesson: Record<Lesson, QuizItem[]> = {
         1: quizSets.first,
         2: quizSets.second,
@@ -140,7 +104,7 @@ export default function App() {
                 if (isMounted) setIsLoadingWords(false);
             });
         return () => { isMounted = false; };
-    }, [selectedGrade]);
+    }, []);
 
     if (selected === 'result') {
         return <ResultHistory onGoMain={goMain} />;
@@ -185,7 +149,7 @@ export default function App() {
                 <section className="mb-10 grid gap-7 lg:grid-cols-[1fr_320px] lg:items-end">
                     <div>
                         <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-[#b8ead6] px-3 py-1.5 text-xs font-bold text-[#173d31]">
-                            <Sparkles size={14} /> {selectedGrade}급 80 WORDS
+                            <Sparkles size={14} /> {selectedGrade}급 100 WORDS
                         </div>
                         <h1 className="max-w-3xl text-4xl font-black leading-[1.08] sm:text-6xl">
                             오늘의 단어를<br />내 것으로 만드는 시간
@@ -193,18 +157,6 @@ export default function App() {
                         <p className="mt-5 max-w-xl text-base leading-7 text-black/55 dark:text-white/55">
                             {currentGradeMeta.description}
                         </p>
-                        <div className="mt-6 inline-flex rounded-lg border border-black/15 bg-white p-1 dark:border-white/15 dark:bg-[#242724]">
-                            {([16, 17, 18, 19, 20] as Grade[]).map((grade) => (
-                                <button
-                                    key={grade}
-                                    type="button"
-                                    onClick={() => setSelectedGrade(grade)}
-                                    className={`h-10 rounded-md px-5 text-sm font-black transition ${selectedGrade === grade ? 'bg-[#171717] text-white dark:bg-[#f4f5ef] dark:text-[#171717]' : 'text-black/45 hover:text-black dark:text-white/45 dark:hover:text-white'}`}
-                                >
-                                    {grade}급
-                                </button>
-                            ))}
-                        </div>
                     </div>
                     <button
                         type="button"
@@ -283,7 +235,7 @@ export default function App() {
                         onClick={() => startStudy('all')}
                         className="flex min-h-24 items-center justify-between rounded-lg bg-[#f8df74] p-5 text-left text-[#171717] transition hover:-translate-y-1 disabled:opacity-40"
                     >
-                        <span><span className="block text-xs font-bold opacity-55">FULL STUDY</span><span className="mt-1 block text-xl font-black">전체 80개 학습</span></span>
+                        <span><span className="block text-xs font-bold opacity-55">FULL STUDY</span><span className="mt-1 block text-xl font-black">전체 100개 학습</span></span>
                         <BookOpen size={25} />
                     </button>
                     <button
@@ -292,7 +244,7 @@ export default function App() {
                         onClick={() => startQuiz('all', 'quiz')}
                         className="flex min-h-24 items-center justify-between rounded-lg bg-[#ffb7a8] p-5 text-left text-[#171717] transition hover:-translate-y-1 disabled:opacity-40"
                     >
-                        <span><span className="block text-xs font-bold opacity-55">FULL TEST</span><span className="mt-1 block text-xl font-black">전체 80개 퀴즈</span></span>
+                        <span><span className="block text-xs font-bold opacity-55">FULL TEST</span><span className="mt-1 block text-xl font-black">전체 100개 퀴즈</span></span>
                         <ArrowRight size={25} />
                     </button>
                     <button

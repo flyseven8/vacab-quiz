@@ -20,7 +20,7 @@ const getGroupKey = (timestamp: number) => {
     return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 };
 
-const formatLessonLabel = (lesson: string) => lesson.includes('급') ? lesson : `19급 · ${lesson}`;
+const formatLessonLabel = (lesson: string) => lesson.includes('급') ? lesson : `15급 · ${lesson}`;
 
 const ResultHistory: React.FC<{ onGoMain: () => void }> = ({ onGoMain }) => {
     const [history, setHistory] = useState<QuizResultHistory[]>([]);
